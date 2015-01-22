@@ -1,4 +1,4 @@
-INCLUDE_DIRECTORIES(${ROSS_SOURCE_DIR})
+INCLUDE_DIRECTORIES(${ROSS_SOURCE_DIR} ${ROSS_BINARY_DIR})
 
 SET(Intersection_srcs
 Intersection.c		Intersection.h)
