@@ -65,7 +65,7 @@ phold_event_handler(phold_state * s, tw_bf * bf, phold_message * m, tw_lp * lp)
     if (g_tw_synchronization_protocol == OPTIMISTIC ||
         g_tw_synchronization_protocol == OPTIMISTIC_DEBUG) {
         // Only do this in OPTIMISTIC mode
-        tw_snapshot(lp, lp->type.state_sz);
+        tw_snapshot(lp, lp->type->state_sz);
     }
 
     count = tw_rand_ulong(lp->rng, 1, 100);
@@ -100,7 +100,7 @@ phold_event_handler(phold_state * s, tw_bf * bf, phold_message * m, tw_lp * lp)
     if (g_tw_synchronization_protocol == OPTIMISTIC ||
         g_tw_synchronization_protocol == OPTIMISTIC_DEBUG) {
         // Only do this in OPTIMISTIC mode
-        delta_size = tw_snapshot_delta(lp, lp->type.state_sz);
+        delta_size = tw_snapshot_delta(lp, lp->type->state_sz);
         m->rng_count = lp->rng->count - start_count;
     }
 }
@@ -112,7 +112,7 @@ phold_event_handler_rc(phold_state * s, tw_bf * bf, phold_message * m, tw_lp * l
     // this gets called, we must be in an OPTIMISTIC mode anyway
     long count = m->rng_count;
     // This should be the FIRST thing to do in your reverse event handler
-    tw_snapshot_restore(lp, lp->type.state_sz, lp->pe->cur_event->delta_buddy, lp->pe->cur_event->delta_size);
+    tw_snapshot_restore(lp, lp->type->state_sz, lp->pe->cur_event->delta_buddy, lp->pe->cur_event->delta_size);
     while (count--) {
         tw_rand_reverse_unif(lp->rng);
     }
