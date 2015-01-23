@@ -13,5 +13,6 @@ Or, link any single model you choose.
 cd ~/Projects
 git clone git@github.com:carothersc/ROSS
 git clone git@github.com:gonsie/ROSS-models
-ln -s ROSS-models ROSS/models/
+ln -s ~/Projects/ROSS-models ROSS/models/
 ```
+Note: You should specify the full path to ROSS-models when creating the symbolic link.
