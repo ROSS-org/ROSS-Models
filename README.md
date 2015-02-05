@@ -6,13 +6,10 @@ Or, use any of the models in the master branch with regular ROSS.
 
 # Installation
 
-To build these models with ROSS, you simply need to sym-link the ROSS-models folder into the ROSS/models folder.
-Or, link any single model you choose.
-
+This repository is automatically linked with ROSS and can be downloaded using the following commands:
 ```
-cd ~/Projects
-git clone git@github.com:carothersc/ROSS
-git clone git@github.com:gonsie/ROSS-models
-ln -s ~/Projects/ROSS-models ROSS/models/
+git clone http://github.com/carothers/ROSS.git
+cd ROSS
+git submodule init
+git submodule update
 ```
-Note: You should specify the full path to ROSS-models when creating the symbolic link.
