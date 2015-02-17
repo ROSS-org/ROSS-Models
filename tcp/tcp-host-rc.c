@@ -6,12 +6,12 @@
 
 
 /*********************************************************************
-              Receives the processing of a packet 
+              Receives the processing of a packet
 *********************************************************************/
 
 void
 tcp_host_process_rc(Host_State *SV,  tw_bf *CV, Msg_Data *M, tw_lp *lp)
-{ 
+{
 
   switch (g_hosts_info[lp->id - g_routers].type)
     {
@@ -38,12 +38,12 @@ tcp_host_process_rc(Host_State *SV,  tw_bf *CV, Msg_Data *M, tw_lp *lp)
       break;
 #endif
 
-    }    
+    }
 }
 
 
 /*********************************************************************
-                Receives the processing of an ack   
+                Receives the processing of an ack
 *********************************************************************/
 
 void
@@ -53,22 +53,22 @@ tcp_host_process_ack_rc(Host_State *SV,  tw_bf *CV, Msg_Data *M, tw_lp *lp)
   int w_time = M->seq_num;
   int ack;
   // printf("%f roll ack %d %d lp %d\n",tw_now(lp), SV->unack, M->ack, lp->id);
- 
+
   if(CV->c2)
     {
       for(i=0; i<w_time; i++)
 	{
 	  //  tw_rand_reverse_unif(lp->id);
-	  SV->seq_num -= g_mss; 
+	  SV->seq_num -= g_mss;
 	  SV->sent_packets--;
 	}
       SV->lastsent = M->RC.lastsent;
-  
-  // reverse tcp_update_rtt 
+
+  // reverse tcp_update_rtt
     if(CV->c5 || CV->c7)
       {
-	
-	SV->rtt_seq = M->RC.rtt_seq; 
+
+	SV->rtt_seq = M->RC.rtt_seq;
 	// M->RC.rtt_seq = SV->rtt_seq;
 	//SV->rtt_seq = M->ack;  // wrong CHANGE
 	SV->rtt_time = M->RC.rtt_time;
@@ -78,7 +78,7 @@ tcp_host_process_ack_rc(Host_State *SV,  tw_bf *CV, Msg_Data *M, tw_lp *lp)
 	  SV->smoothed_rtt = M->RC.smoothed_rtt;
 	  SV->dev = M->RC.dev;
 	}
-	
+
 	if(CV->c13){
 	  Msg_Data *M1;
 	  if(SV->rto_timer)
@@ -91,11 +91,11 @@ tcp_host_process_ack_rc(Host_State *SV,  tw_bf *CV, Msg_Data *M, tw_lp *lp)
 	  M1->MethodName = RTO;
 	}
       }
-    
+
     // Reverse tcp_update_cwnd
     if(CV->c3 || CV->c4)
-      SV->cwnd = M->RC.cwnd; 
-  
+      SV->cwnd = M->RC.cwnd;
+
     ack = SV->unack;
     SV->unack = M->ack;//512;
     M->ack = ack - g_mss;
@@ -103,26 +103,26 @@ tcp_host_process_ack_rc(Host_State *SV,  tw_bf *CV, Msg_Data *M, tw_lp *lp)
     if(CV->c9)
       SV->seq_num = M->RC.seq_num;
   }
-  else 
+  else
     {
       if(CV->c3)
 	{
 	  SV->dup_count -= 1;
 	  if(CV->c4)
 	    {
-	      
+
 	      SV->rtt_time = M->RC.rtt_time;
-	      SV->rtt_seq  = M->RC.seq_num;//SV->unack; //big CHANGE 
+	      SV->rtt_seq  = M->RC.seq_num;//SV->unack; //big CHANGE
 	      //SV->timedout_packets--;
 	      //SV->sent_packets--;
-	      
+
 	      SV->seq_num = M->ack;
 	      M->ack = SV->unack - g_mss;
 
 	      SV->lastsent = M->RC.lastsent;
 	      SV->cwnd = M->RC.cwnd;
 	      SV->ssthresh = M->dest;
-	      
+
 	      if(CV->c13){
 		Msg_Data *M1;
 		if(SV->rto_timer)
@@ -175,13 +175,13 @@ tcp_host_process_data_rc(Host_State *SV,  tw_bf *CV, Msg_Data *M, tw_lp *lp)
 
 
 /*********************************************************************
-                 Receives the processing of a timeout    
+                 Receives the processing of a timeout
 *********************************************************************/
 
-void 
+void
 tcp_host_timeout_rc(Host_State *SV, tw_bf *CV, Msg_Data *M, tw_lp *lp)
 {
-  int seq_num = M->ack; 
+  int seq_num = M->ack;
 
   if(CV->c1)
     {
@@ -190,14 +190,14 @@ tcp_host_timeout_rc(Host_State *SV, tw_bf *CV, Msg_Data *M, tw_lp *lp)
       SV->rtt_seq = M->RC.rtt_seq;//M->seq_num; CHANGE
       SV->timedout_packets--;
       //SV->sent_packets--;
-      
+
       SV->smoothed_rtt = M->RC.smoothed_rtt;
       SV->rto = M->RC.dup_count;//SV->rto/2; //possible an error.
       SV->seq_num = seq_num;
-      
+
       SV->cwnd = M->dest;
       SV->ssthresh = M->RC.cwnd;
-      
+
       tw_timer_cancel(lp, &(SV->rto_timer));
       SV->rto_timer = M->RC.rto_timer;
     }
@@ -205,10 +205,10 @@ tcp_host_timeout_rc(Host_State *SV, tw_bf *CV, Msg_Data *M, tw_lp *lp)
 
 
 /*********************************************************************
-               EventHandler for receiving Host events 
+               EventHandler for receiving Host events
 *********************************************************************/
 
-void 
+void
 tcp_host_rc_EventHandler(Host_State *SV, tw_bf *CV, Msg_Data *M, tw_lp *lp)
 {
   //  if(lp->id == 1)
@@ -225,7 +225,6 @@ tcp_host_rc_EventHandler(Host_State *SV, tw_bf *CV, Msg_Data *M, tw_lp *lp)
     default:
       tw_error(TW_LOC, "APP_ERROR(8)(%d): InValid MethodName(%d)\n",
 	       lp->id, M->MethodName);
-      tw_exit(1);
     }
 }
 

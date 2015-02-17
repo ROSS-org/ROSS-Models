@@ -11,7 +11,7 @@
 
 void
 tcp_router_forward_rc(Router_State *SV,  tw_bf *CV, Msg_Data *M, tw_lp * lp)
-{  
+{
   int nexthop_link = tcp_util_nexthop_link(lp,M->dest);
   tw_rand_reverse_unif(lp->rng);
 
@@ -20,10 +20,10 @@ tcp_router_forward_rc(Router_State *SV,  tw_bf *CV, Msg_Data *M, tw_lp * lp)
   else {
     /*     switch(g_routers_links[lp->id][nexthop_link].buffer_sz){
       case 12400000:
-	SV->dropped_packets[0]++; 
+	SV->dropped_packets[0]++;
 	break;
       case 3000000:
-	SV->dropped_packets[1]++; 
+	SV->dropped_packets[1]++;
 	break;
       case 775000:
 	SV->dropped_packets[2]++;
@@ -58,7 +58,7 @@ tcp_router_forward_rc(Router_State *SV,  tw_bf *CV, Msg_Data *M, tw_lp * lp)
                     Reverses the routers EventHandler
 *********************************************************************/
 
-void 
+void
 tcp_router_rc_EventHandler(Router_State *SV, tw_bf * CV,Msg_Data *M, tw_lp * lp)
 {
   //printf("router rollback %f lp %d\n",tw_now(lp),lp->id);
@@ -70,7 +70,6 @@ tcp_router_rc_EventHandler(Router_State *SV, tw_bf * CV,Msg_Data *M, tw_lp * lp)
     default:
       tw_error(TW_LOC, "APP_ERROR(8)(%d): InValid MethodName(%d)\n",
 	       lp->id, M->MethodName);
-      tw_exit(1);
     }
 }
 

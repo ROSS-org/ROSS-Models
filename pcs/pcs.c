@@ -1,18 +1,18 @@
 #include "pcs.h"
 
-double 
+double
 Pi_Distribution(double n, double N)
 {
   double          i;
   double          nfactorial;
-  
+
   nfactorial = 1.0;
   for (i = 1.0; i <= n; i += 1.0)
     nfactorial *= i;
   return ((pow(N, n) * exp(-N)) / nfactorial);
 }
 
-int 
+int
 GenInitPortables(tw_lp * lp)
 {
   return ((int)BIG_N);
@@ -53,7 +53,7 @@ tw_lpid Cell_ComputeMove( tw_lpid lpid, int direction )
       n_x = lpid_x;
       n_y = (lpid_y + 1) % NUM_CELLS_Y;
       break;
-      
+
     default:
       tw_error( TW_LOC, "Bad direction value \n");
     }
@@ -64,18 +64,18 @@ tw_lpid Cell_ComputeMove( tw_lpid lpid, int direction )
 }
 
 tw_peid
-CellMapping_lp_to_pe(tw_lpid lpid) 
+CellMapping_lp_to_pe(tw_lpid lpid)
 {
   long lp_x = lpid % NUM_CELLS_X;
   long lp_y = lpid / NUM_CELLS_X;
   long vp_num_x = lp_x/g_cells_per_vp_x;
   long vp_num_y = lp_y/g_cells_per_vp_y;
-  long vp_num = vp_num_x + (vp_num_y*NUM_VP_X);  
-  tw_peid peid = vp_num/g_vp_per_proc;  
+  long vp_num = vp_num_x + (vp_num_y*NUM_VP_X);
+  tw_peid peid = vp_num/g_vp_per_proc;
   return peid;
 }
 
-tw_lp *CellMapping_to_lp(tw_lpid lpid) 
+tw_lp *CellMapping_to_lp(tw_lpid lpid)
 {
   tw_lpid lp_x = lpid % NUM_CELLS_X; //lpid -> (lp_x,lp_y)
   tw_lpid lp_y = lpid / NUM_CELLS_X;
@@ -84,19 +84,19 @@ tw_lp *CellMapping_to_lp(tw_lpid lpid)
   tw_lpid vp_index = vp_index_x + (vp_index_y * (g_cells_per_vp_x));
   tw_lpid vp_num_x = lp_x/g_cells_per_vp_x;
   tw_lpid vp_num_y = lp_y/g_cells_per_vp_y;
-  tw_lpid vp_num = vp_num_x + (vp_num_y*NUM_VP_X);  
+  tw_lpid vp_num = vp_num_x + (vp_num_y*NUM_VP_X);
   vp_num = vp_num % g_vp_per_proc;
   tw_lpid index = vp_index + vp_num*g_cells_per_vp;
 
-#ifdef ROSS_runtime_check  
+#ifdef ROSS_runtime_check
   if( index >= g_tw_nlp )
     tw_error(TW_LOC, "index (%llu) beyond g_tw_nlp (%llu) range \n", index, g_tw_nlp);
 #endif /* ROSS_runtime_check */
-  
+
   return g_tw_lp[index];
 }
 
-tw_lpid CellMapping_to_local_index(tw_lpid lpid) 
+tw_lpid CellMapping_to_local_index(tw_lpid lpid)
 {
   tw_lpid lp_x = lpid % NUM_CELLS_X; //lpid -> (lp_x,lp_y)
   tw_lpid lp_y = lpid / NUM_CELLS_X;
@@ -105,19 +105,19 @@ tw_lpid CellMapping_to_local_index(tw_lpid lpid)
   tw_lpid vp_index = vp_index_x + (vp_index_y * (g_cells_per_vp_x));
   tw_lpid vp_num_x = lp_x/g_cells_per_vp_x;
   tw_lpid vp_num_y = lp_y/g_cells_per_vp_y;
-  tw_lpid vp_num = vp_num_x + (vp_num_y*NUM_VP_X);  
+  tw_lpid vp_num = vp_num_x + (vp_num_y*NUM_VP_X);
   vp_num = vp_num % g_vp_per_proc;
   tw_lpid index = vp_index + vp_num*g_cells_per_vp;
-  
+
   if( index >= g_tw_nlp )
     tw_error(TW_LOC, "index (%llu) beyond g_tw_nlp (%llu) range \n", index, g_tw_nlp);
-  
+
   return( index );
 }
 
 
 
-Min_t 
+Min_t
 Cell_MinTS(struct Msg_Data *M)
 {
   if (M->CompletionCallTS < M->NextCallTS)
@@ -135,17 +135,17 @@ Cell_MinTS(struct Msg_Data *M)
     }
 }
 
-void 
+void
 Cell_StartUp(struct State *SV, tw_lp * lp)
 {
   tw_lpid currentcell = 0, newcell = 0;
   int             i, dest_index = 0;
   tw_stime          ts;
-  
+
   struct Msg_Data TMsg;
   struct Msg_Data * TWMsg;
   tw_event *CurEvent;
-  
+
   SV->Normal_Channels = MAX_NORMAL_CHANNELS;
   SV->Reserve_Channels = MAX_RESERVE_CHANNELS;
   SV->Portables_In = 0;
@@ -205,7 +205,7 @@ Cell_StartUp(struct State *SV, tw_lp * lp)
 	    }
 
 	  ts = ROSS_MAX(0.0, TMsg.NextCallTS - tw_now(lp));
-	  CurEvent = tw_event_new(currentcell, ts, lp); 
+	  CurEvent = tw_event_new(currentcell, ts, lp);
 	  TWMsg = tw_event_data(CurEvent);
 	  TWMsg->CompletionCallTS = TMsg.CompletionCallTS;
 	  TWMsg->MoveCallTS = TMsg.MoveCallTS;
@@ -217,7 +217,7 @@ Cell_StartUp(struct State *SV, tw_lp * lp)
     }
 }
 
-void 
+void
 Cell_NextCall(struct State *SV, tw_bf * CV, struct Msg_Data *M, tw_lp * lp)
 {
   int             done, dest_index = 0;
@@ -343,7 +343,7 @@ Cell_NextCall(struct State *SV, tw_bf * CV, struct Msg_Data *M, tw_lp * lp)
     }
 }
 
-void 
+void
 Cell_CompletionCall(struct State *SV, tw_bf * CV, struct Msg_Data *M, tw_lp * lp)
 {
   int             dest_index = 0;
@@ -368,7 +368,6 @@ Cell_CompletionCall(struct State *SV, tw_bf * CV, struct Msg_Data *M, tw_lp * lp
     {
       tw_error(TW_LOC, "APP_ERROR(2): CompletionCall: Bad ChannelType(%d) \n",
 	       M->ChannelType);
-      tw_exit(1);
     }
   if (SV->Normal_Channels > MAX_NORMAL_CHANNELS ||
       SV->Reserve_Channels > MAX_RESERVE_CHANNELS)
@@ -376,7 +375,6 @@ Cell_CompletionCall(struct State *SV, tw_bf * CV, struct Msg_Data *M, tw_lp * lp
       tw_error(TW_LOC, "APP_ERROR(3): Normal_Channels(%d) > MAX %d OR Reserve_Channels(%d) > MAX %d \n",
 	       SV->Normal_Channels, MAX_NORMAL_CHANNELS, SV->Reserve_Channels,
 	       MAX_RESERVE_CHANNELS);
-      tw_exit(1);
     }
   TMsg.ChannelType = NONE;
 
@@ -385,7 +383,6 @@ Cell_CompletionCall(struct State *SV, tw_bf * CV, struct Msg_Data *M, tw_lp * lp
     case COMPLETECALL:
       tw_error(TW_LOC, "APP_ERROR(NextCall): CompletionCallTS(%lf) Is Min \n",
 	       TMsg.CompletionCallTS);
-      tw_exit(1);
       break;
 
     case NEXTCALL:
@@ -416,7 +413,7 @@ Cell_CompletionCall(struct State *SV, tw_bf * CV, struct Msg_Data *M, tw_lp * lp
 	  TMsg.MoveCallTS += result;
 	}
       ts = ROSS_MAX(0.0, TMsg.NextCallTS - tw_now(lp));
-      CurEvent = tw_event_new((currentcell), ts, lp); 
+      CurEvent = tw_event_new((currentcell), ts, lp);
       TWMsg = (struct Msg_Data *)tw_event_data(CurEvent);
       TWMsg->MethodName = TMsg.MethodName;
       TWMsg->ChannelType = TMsg.ChannelType;
@@ -429,7 +426,7 @@ Cell_CompletionCall(struct State *SV, tw_bf * CV, struct Msg_Data *M, tw_lp * lp
     }
 }
 
-void 
+void
 Cell_MoveCallIn(struct State *SV, tw_bf * CV, struct Msg_Data *M, tw_lp * lp)
 {
   int             done, dest_index = 0;
@@ -459,7 +456,6 @@ Cell_MoveCallIn(struct State *SV, tw_bf * CV, struct Msg_Data *M, tw_lp * lp)
 	    case COMPLETECALL:
 	      tw_error(TW_LOC, "APP_ERROR(NextCall): CompletionCallTS(%lf) Is Min \n",
 		       TMsg.CompletionCallTS);
-	      tw_exit(1);
 	      break;
 
 	    case NEXTCALL:
@@ -563,11 +559,10 @@ Cell_MoveCallIn(struct State *SV, tw_bf * CV, struct Msg_Data *M, tw_lp * lp)
     } else
     {
       tw_error(TW_LOC, "APP_ERROR(11): MoveCallIn: Got MoveCallIn Event W/O Call In Progress!! \n");
-      tw_exit(1);
     }
 }
 
-void 
+void
 Cell_MoveCallOut(struct State *SV, tw_bf * CV, struct Msg_Data *M, tw_lp * lp)
 {
   int             dest_index;
@@ -595,13 +590,11 @@ Cell_MoveCallOut(struct State *SV, tw_bf * CV, struct Msg_Data *M, tw_lp * lp)
 	{
 	  tw_error(TW_LOC, "APP_ERROR(7): MoveCallOut: Bad ChannelType(%d) \n",
 		   M->ChannelType);
-	  tw_exit(1);
 	}
       TMsg.ChannelType = NONE;
     } else
     {
       tw_error(TW_LOC, "APP_ERROR(9): MoveCallOut: NOT IN CALL: SHOULD NOT BE HERE!! \n");
-      tw_exit(1);
     }
 
   ts = ROSS_MAX(0.0, TMsg.MoveCallTS - tw_now(lp));
@@ -618,7 +611,7 @@ Cell_MoveCallOut(struct State *SV, tw_bf * CV, struct Msg_Data *M, tw_lp * lp)
   tw_event_send(CurEvent);
 }
 
-void 
+void
 Cell_EventHandler(struct State *SV, tw_bf * CV, struct Msg_Data *M, tw_lp * lp)
 {
 #ifdef LPTRACEON
@@ -644,7 +637,6 @@ Cell_EventHandler(struct State *SV, tw_bf * CV, struct Msg_Data *M, tw_lp * lp)
     default:
       tw_error(TW_LOC, "APP_ERROR(8)(%d): InValid MethodName(%d)\n",
 	       lp->id, M->MethodName);
-      tw_exit(1);
     }
 
 #ifdef LPTRACEON
@@ -654,7 +646,7 @@ Cell_EventHandler(struct State *SV, tw_bf * CV, struct Msg_Data *M, tw_lp * lp)
 #endif
 }
 
-void 
+void
 RC_Cell_NextCall(struct State *SV, tw_bf * CV, struct Msg_Data *M, tw_lp * lp)
 {
   int             i;
@@ -683,7 +675,7 @@ RC_Cell_NextCall(struct State *SV, tw_bf * CV, struct Msg_Data *M, tw_lp * lp)
     }
 }
 
-void 
+void
 RC_Cell_CompletionCall(struct State *SV, tw_bf * CV, struct Msg_Data *M, tw_lp * lp)
 {
   int             i;
@@ -700,7 +692,7 @@ RC_Cell_CompletionCall(struct State *SV, tw_bf * CV, struct Msg_Data *M, tw_lp *
     }
 }
 
-void 
+void
 RC_Cell_MoveCallIn(struct State *SV, tw_bf * CV, struct Msg_Data *M, tw_lp * lp)
 {
   int             i;
@@ -733,7 +725,7 @@ RC_Cell_MoveCallIn(struct State *SV, tw_bf * CV, struct Msg_Data *M, tw_lp * lp)
     }
 }
 
-void 
+void
 RC_Cell_MoveCallOut(struct State *SV, tw_bf * CV, struct Msg_Data *M, tw_lp * lp)
 {
   if (CV->c1)
@@ -747,7 +739,7 @@ RC_Cell_MoveCallOut(struct State *SV, tw_bf * CV, struct Msg_Data *M, tw_lp * lp
 }
 
 
-void 
+void
 RC_Cell_EventHandler(struct State *SV, tw_bf * CV, struct Msg_Data *M, tw_lp * lp)
 {
 #ifdef LPTRACEON
@@ -777,7 +769,7 @@ RC_Cell_EventHandler(struct State *SV, tw_bf * CV, struct Msg_Data *M, tw_lp * l
 #endif
 }
 
-void 
+void
 CellStatistics_CollectStats(struct State *SV, tw_lp * lp)
 {
   TWAppStats.Call_Attempts += SV->Call_Attempts;
@@ -788,14 +780,14 @@ CellStatistics_CollectStats(struct State *SV, tw_lp * lp)
   TWAppStats.Portables_Out += SV->Portables_Out;
 }
 
-void 
+void
 CellStatistics_Compute(struct CellStatistics *CS)
 {
   CS->Blocking_Probability = ((double)CS->Channel_Blocks + (double)CS->Handoff_Blocks) /
     ((double)CS->Call_Attempts - (double)CS->Busy_Lines);
 }
 
-void 
+void
 CellStatistics_Print(struct CellStatistics *CS)
 {
   printf("Call Attempts......................................%d\n",
@@ -814,7 +806,7 @@ CellStatistics_Print(struct CellStatistics *CS)
 	 CS->Blocking_Probability);
 }
 
-void 
+void
 FindMostSquare(int *xpe, int *ype)
 {
   int             x, y, npe;
@@ -892,7 +884,7 @@ void pcs_grid_mapping()
 	  lpid = (x + (y * NUM_CELLS_X));
 	  if( g_tw_mynode == CellMapping_lp_to_pe(lpid) )
 	    {
-	   
+
 	      kpid = local_lp_count/num_cells_per_kp;
 	      local_lp_count++; // MUST COME AFTER!! DO NOT PRE-INCREMENT ELSE KPID is WRONG!!
 
@@ -915,9 +907,9 @@ main(int argc, char **argv)
 {
   tw_lpid         num_cells_per_kp, vp_per_proc;
   unsigned int    additional_memory_buffers;
-  
+
   // printf("Enter TWnpe, TWnkp, additional_memory_buffers \n" );
-  // scanf("%d %d %d", 
+  // scanf("%d %d %d",
   //	&TWnpe, &TWnkp, &additional_memory_buffers );
 
   tw_init(&argc, &argv);
@@ -925,7 +917,7 @@ main(int argc, char **argv)
   nlp_per_pe = (NUM_CELLS_X * NUM_CELLS_Y) / (tw_nnodes() * g_tw_npe);
   additional_memory_buffers = 2 * g_tw_mblock * g_tw_gvt_interval;
 
-  g_tw_events_per_pe = (nlp_per_pe * (unsigned int)BIG_N) + 
+  g_tw_events_per_pe = (nlp_per_pe * (unsigned int)BIG_N) +
     additional_memory_buffers;
 
   if( tw_ismaster() )
@@ -934,7 +926,7 @@ main(int argc, char **argv)
       printf("    Buffers Allocated Per PE = %d\n", g_tw_events_per_pe);
       printf("\n\n");
     }
- 
+
   num_cells_per_kp = (NUM_CELLS_X * NUM_CELLS_Y) / (NUM_VP_X * NUM_VP_Y);
   vp_per_proc = (NUM_VP_X * NUM_VP_Y) / ((tw_nnodes() * g_tw_npe)) ;
   g_vp_per_proc = vp_per_proc;
@@ -968,7 +960,7 @@ main(int argc, char **argv)
   tw_define_lps(nlp_per_pe, sizeof(struct Msg_Data), 0);
 
   /*
-   * Initialize App Stats Structure 
+   * Initialize App Stats Structure
    */
   TWAppStats.Call_Attempts = 0;
   TWAppStats.Call_Attempts = 0;
