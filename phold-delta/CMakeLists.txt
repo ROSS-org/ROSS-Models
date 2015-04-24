@@ -15,3 +15,11 @@ IF(BGPM)
 ELSE(NOT(BGPM))
 	TARGET_LINK_LIBRARIES(dphold ROSS m)   
 ENDIF(BGPM)
+
+add_test(NAME conservative
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+            COMMAND mpirun -np 2 ./dphold --synch=2 --lookahead=0.0001 --end=10000.0)
+
+add_test(NAME optimistic
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+            COMMAND mpirun -np 2 ./dphold --synch=3 --lookahead=0.0001 --end=10000.0 --buddy_size=20)
