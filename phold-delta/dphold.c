@@ -1,5 +1,25 @@
 #include "dphold.h"
 #include <assert.h>
+#include <stdlib.h>
+
+/* Arrange the N elements of ARRAY in random order.
+   Only effective if N is much smaller than RAND_MAX;
+   if this may not be the case, use a better random
+   number generator. */
+void shuffle(tw_rng_stream *g, int *array, size_t n)
+{
+    if (n > 1)
+    {
+        size_t i;
+        for (i = 0; i < n - 1; i++)
+        {
+	  size_t j = tw_rand_integer(g, i, n);
+          int t = array[j];
+          array[j] = array[i];
+          array[i] = t;
+        }
+    }
+}
 
 tw_peid
 phold_map(tw_lpid gid)
@@ -7,18 +27,36 @@ phold_map(tw_lpid gid)
 	return (tw_peid) gid / g_tw_nlp;
 }
 
+typedef struct {
+  unsigned long delta_count;
+  double delta_average;
+  double state_changed;
+} delta_info;
+
+#define DI_SIZE DUMMY_SIZE
+
+delta_info DI[DI_SIZE];
+int order[DI_SIZE];
+
 void
 phold_init(phold_state * s, tw_lp * lp)
 {
 	int              i;
+
+	for (i = 0; i < DI_SIZE; i++) {
+	  DI[i].delta_count = 0;
+	  DI[i].delta_average = 0.0;
+	  DI[i].state_changed = 0.0;
+	  order[i] = i;
+	}
 
 	if( stagger )
 	  {
 	    for (i = 0; i < g_phold_start_events; i++)
 	      {
 		tw_event_send(
-			      tw_event_new(lp->gid, 
-					   tw_rand_exponential(lp->rng, mean) + lookahead + (tw_stime)(lp->gid % (unsigned int)g_tw_ts_end), 
+			      tw_event_new(lp->gid,
+					   tw_rand_exponential(lp->rng, mean) + lookahead + (tw_stime)(lp->gid % (unsigned int)g_tw_ts_end),
 					   lp));
 	      }
 	  }
@@ -27,8 +65,8 @@ phold_init(phold_state * s, tw_lp * lp)
 	    for (i = 0; i < g_phold_start_events; i++)
 	      {
 		tw_event_send(
-			      tw_event_new(lp->gid, 
-					   tw_rand_exponential(lp->rng, mean) + lookahead, 
+			      tw_event_new(lp->gid,
+					   tw_rand_exponential(lp->rng, mean) + lookahead,
 					   lp));
 	      }
 	  }
@@ -53,56 +91,78 @@ phold_pre_run(phold_state * s, tw_lp * lp)
 	tw_event_send(tw_event_new(dest, tw_rand_exponential(lp->rng, mean) + lookahead, lp));
 }
 
+static unsigned long delta_count = 0;
+static double delta_average = 0.0;
+
+
+
 void
 phold_event_handler(phold_state * s, tw_bf * bf, phold_message * m, tw_lp * lp)
 {
-    long delta_size;
-    unsigned count;
-	tw_lpid	 dest;
-    long start_count = lp->rng->count;
+  long delta_size;
+  int i;
+  int idx;
+  unsigned count;
+  tw_lpid	 dest;
+  long start_count = lp->rng->count;
 
-    // This should be the FIRST thing to do in your event handler
-    if (g_tw_synchronization_protocol == OPTIMISTIC ||
-        g_tw_synchronization_protocol == OPTIMISTIC_DEBUG) {
-        // Only do this in OPTIMISTIC mode
-        tw_snapshot(lp, lp->type->state_sz);
+  // This should be the FIRST thing to do in your event handler
+  if (g_tw_synchronization_protocol == OPTIMISTIC ||
+      g_tw_synchronization_protocol == OPTIMISTIC_DEBUG) {
+    // Only do this in OPTIMISTIC mode
+    tw_snapshot(lp, lp->type->state_sz);
+  }
+
+  // Generate the number of items to change
+  count = tw_rand_ulong(lp->rng, 1, DI_SIZE / 4);
+  idx = count;
+
+  // Shuffle the order
+  shuffle(lp->rng, order, DI_SIZE - 2);
+
+  // Change 'count' items
+  for (i = 0; i < count; i++) {
+    // Change the item located at index order[i]
+    s->dummy_state[order[i]] = tw_rand_integer(lp->rng, 0, LONG_MAX);
+  }
+
+  if(tw_rand_unif(lp->rng) <= percent_remote)
+    {
+      dest = tw_rand_integer(lp->rng, 0, ttl_lps - 1);
+      // Makes PHOLD non-deterministic across processors! Don't uncomment
+      /* dest += offset_lpid; */
+      /* if(dest >= ttl_lps) */
+      /* 	dest -= ttl_lps; */
+    } else
+    {
+      dest = lp->gid;
     }
 
-    count = tw_rand_ulong(lp->rng, 1, 100);
-    
-    while (count--) {
-        double new_val;
-        unsigned index = tw_rand_ulong(lp->rng, 0, DUMMY_SIZE - 1);
-        if ((new_val = tw_rand_exponential(lp->rng, 1.0) < 0.5)) {
-            s->dummy_state[index] = new_val;
-        }
-    }
-    
-	if(tw_rand_unif(lp->rng) <= percent_remote)
-	{
-		dest = tw_rand_integer(lp->rng, 0, ttl_lps - 1);
-		// Makes PHOLD non-deterministic across processors! Don't uncomment
-		/* dest += offset_lpid; */
-		/* if(dest >= ttl_lps) */
-		/* 	dest -= ttl_lps; */
-	} else
-	{
-		dest = lp->gid;
-	}
+  if(dest < 0 || dest >= (g_tw_nlp * tw_nnodes()))
+    tw_error(TW_LOC, "bad dest");
 
-	if(dest < 0 || dest >= (g_tw_nlp * tw_nnodes()))
-		tw_error(TW_LOC, "bad dest");
+  tw_event_send(tw_event_new(dest, tw_rand_exponential(lp->rng, mean) + lookahead, lp));
 
-	tw_event_send(tw_event_new(dest, tw_rand_exponential(lp->rng, mean) + lookahead, lp));
-
-    // This should be the LAST thing you do in your event handler
-    // (Take care to cover all possible exits!)
-    if (g_tw_synchronization_protocol == OPTIMISTIC ||
-        g_tw_synchronization_protocol == OPTIMISTIC_DEBUG) {
-        // Only do this in OPTIMISTIC mode
-        delta_size = tw_snapshot_delta(lp, lp->type->state_sz);
-        m->rng_count = lp->rng->count - start_count;
-    }
+  // This should be the LAST thing you do in your event handler
+  // (Take care to cover all possible exits!)
+  if (g_tw_synchronization_protocol == OPTIMISTIC ||
+      g_tw_synchronization_protocol == OPTIMISTIC_DEBUG) {
+    double temp = delta_average;
+    // Only do this in OPTIMISTIC mode
+    delta_size = tw_snapshot_delta(lp, lp->type->state_sz);
+    // Update the average
+    temp *= delta_count;
+    temp += (double)delta_size / lp->type->state_sz;
+    delta_count++;
+    delta_average = temp / delta_count;
+    m->rng_count = lp->rng->count - start_count;
+    temp = DI[idx].delta_average;
+    temp *= DI[idx].delta_count;
+    temp += (double)delta_size / lp->type->state_sz;
+    DI[idx].delta_count = DI[idx].delta_count + 1;
+    DI[idx].delta_average = temp / DI[idx].delta_count;
+    DI[idx].state_changed = (double)(count * sizeof(double)) / lp->type->state_sz;
+  }
 }
 
 void
@@ -172,7 +232,7 @@ main(int argc, char **argv, char **env)
 
 	offset_lpid = g_tw_mynode * nlp_per_pe;
 	ttl_lps = tw_nnodes() * g_tw_npe * nlp_per_pe;
-	g_tw_events_per_pe = (mult * nlp_per_pe * g_phold_start_events) + 
+	g_tw_events_per_pe = (mult * nlp_per_pe * g_phold_start_events) +
 				optimistic_memory;
 	//g_tw_rng_default = TW_FALSE;
 	g_tw_lookahead = lookahead;
@@ -198,6 +258,16 @@ main(int argc, char **argv, char **env)
 
 	tw_run();
 	tw_end();
+
+	if (g_tw_mynode == 0) {
+	  printf("delta_average is %lf over %lu allocations\n", delta_average, delta_count);
+
+	  for (i = 0; i < DI_SIZE; i++) {
+	    if (DI[i].delta_count == 0) continue;
+	    //printf("%d is %lf over %lu allocations\n", i, DI[i].delta_average, DI[i].delta_count);
+	    printf("%lf changed %lf\n", DI[i].state_changed, DI[i].delta_average);
+	  }
+	}
 
 	return 0;
 }
