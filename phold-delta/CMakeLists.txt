@@ -11,15 +11,11 @@ dphold.c		dphold.h)
 ADD_EXECUTABLE(dphold ${dphold_srcs})
 
 IF(BGPM)
-	TARGET_LINK_LIBRARIES(dphold ROSS imp_bgpm m)   
+	TARGET_LINK_LIBRARIES(dphold ROSS imp_bgpm m)
 ELSE(NOT(BGPM))
-	TARGET_LINK_LIBRARIES(dphold ROSS m)   
+	TARGET_LINK_LIBRARIES(dphold ROSS m)
 ENDIF(BGPM)
 
-add_test(NAME conservative
-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-            COMMAND mpirun -np 2 ./dphold --synch=2 --lookahead=0.0001 --end=10000.0)
+add_test(DeltaPholdConservative mpirun -np 2 ./dphold --synch=2 --lookahead=0.0001 --end=1000.0)
 
-add_test(NAME optimistic
-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-            COMMAND mpirun -np 2 ./dphold --synch=3 --lookahead=0.0001 --end=10000.0 --buddy_size=20)
+add_test(DeltaPholdOptimistic mpirun -np 2 ./dphold --synch=3 --lookahead=0.0001 --end=1000.0 --buddy_size=20)
