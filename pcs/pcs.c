@@ -155,8 +155,8 @@ Cell_StartUp(struct State *SV, tw_lp * lp)
   SV->Handoff_Blocks = 0;
   SV->Busy_Lines = 0;
   SV->Handoff_Blocks = 0;
-  SV->CellLocationX = lp->id % NUM_CELLS_X;
-  SV->CellLocationY = lp->id / NUM_CELLS_X;
+  SV->CellLocationX = lp->gid % NUM_CELLS_X;
+  SV->CellLocationY = lp->gid / NUM_CELLS_X;
 
   if (SV->CellLocationX >= NUM_CELLS_X ||
       SV->CellLocationY >= NUM_CELLS_Y)
@@ -636,7 +636,7 @@ Cell_EventHandler(struct State *SV, tw_bf * CV, struct Msg_Data *M, tw_lp * lp)
       break;
     default:
       tw_error(TW_LOC, "APP_ERROR(8)(%d): InValid MethodName(%d)\n",
-	       lp->id, M->MethodName);
+	       lp->gid, M->MethodName);
     }
 
 #ifdef LPTRACEON
