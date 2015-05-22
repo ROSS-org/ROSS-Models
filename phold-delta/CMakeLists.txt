@@ -18,4 +18,4 @@ ENDIF(BGPM)
 
 add_test(DeltaPholdConservative mpirun -np 2 ./dphold --synch=2 --lookahead=0.0001 --end=1000.0)
 
-add_test(DeltaPholdOptimistic mpirun -np 2 ./dphold --synch=3 --lookahead=0.0001 --end=1000.0 --buddy_size=20)
+add_test(DeltaPholdOptimistic mpirun -np 2 ./dphold --synch=3 --lookahead=0.0001 --end=1000.0 --buddy_size=22)
