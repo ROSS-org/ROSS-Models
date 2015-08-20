@@ -56,14 +56,19 @@ int rng_main(int argc, char *argv[])
 {
     int i;
     
+    int32_t local_seed[] = { 5555, 6666, 7777, 8888 };
+    // Do this *BEFORE* tw_init() is called
+    g_tw_rng_seed = local_seed;
+
     rng_event_log = fopen("rng_log.txt", "w");
     if (rng_event_log == NULL) {
         tw_error(TW_LOC, "Failed to open rng_log.txt\n");
     }
-    
+
     tw_init(&argc, &argv);
     
-    tw_define_lps(1, sizeof(message), 0);
+    // Note: you must pass the same value as the last arg. to tw_define_lps()
+    tw_define_lps(1, sizeof(message), local_seed);
     
     for (i = 0; i < g_tw_nlp; i++) {
         tw_lp_settype(i, &rng_lps[0]);
