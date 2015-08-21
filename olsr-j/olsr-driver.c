@@ -114,7 +114,7 @@ void olsr_init(node_state *s, tw_lp *lp)
     int i;
 
 #if DEBUG
-    fprintf( olsr_event_log, "OLSR Init LP %d RNG Seeds Are: ", lp->gid);
+    fprintf( olsr_event_log, "OLSR Init LP %llu RNG Seeds Are: ", lp->gid);
     rng_write_state( lp->rng, olsr_event_log );
 #endif
 
@@ -204,7 +204,7 @@ void olsr_init(node_state *s, tw_lp *lp)
 void sa_master_init(node_state *s, tw_lp *lp)
 {
 #if DEBUG
-  fprintf( olsr_event_log, "SA Master Init LP %d RNG Seeds Are: ", lp->gid);
+  fprintf( olsr_event_log, "SA Master Init LP %llu RNG Seeds Are: ", lp->gid);
   rng_write_state( lp->rng, olsr_event_log );
 #endif
 
@@ -687,14 +687,14 @@ void printTC(olsr_msg_data *m, node_state *s)
 #ifdef JML_DEBUG
     int i;
 
-    printf("Node %lu has %d neighbors:\n", s->local_address, s->num_neigh);
+    printf("Node %llu has %d neighbors:\n", s->local_address, s->num_neigh);
     for (i = 0; i < s->num_neigh; i++) {
         printf("   neighbor %lu\n", s->neighSet[i].neighborMainAddr);
     }
     printf("Received TC message with %d neighbors of node %lu\n",
            m->mt.t.num_neighbors, m->originator);
     for (i = 0; i < m->mt.t.num_neighbors; i++) {
-        printf("   TC-NEIGH %lu\n", m->mt.t.neighborAddresses[i]);
+        printf("   TC-NEIGH %llu\n", m->mt.t.neighborAddresses[i]);
     }
     printf("\n");
 
@@ -809,7 +809,7 @@ void route_packet(node_state *s, tw_event *e)
     olsr_msg_data *m = tw_event_data(e);
     RT_entry * route = Lookup(s, m->destination);
     if (route == NULL) {
-        printf("Node %lu doesn't have a route to %lu\n", s->local_address, m->destination);
+        printf("Node %llu doesn't have a route to %llu\n", s->local_address, m->destination);
         return;
     }
 
@@ -852,11 +852,11 @@ void olsr_event(node_state *s, tw_bf *bf, olsr_msg_data *m, tw_lp *lp)
     //latlng_cluster *llc;
 
 #if DEBUG
-    fprintf( olsr_event_log, "OLSR Event: LP %d Type %d at TS = %lf RNGs:", lp->gid, m->type, tw_now(lp) );
+    fprintf( olsr_event_log, "OLSR Event: LP %llu Type %d at TS = %lf RNGs:", lp->gid, m->type, tw_now(lp) );
     rng_write_state( lp->rng, olsr_event_log );
 
     if( lp->gid == 1023 ) {
-        printf("LP DUMP Node %llu on Rank %d at TS=%lf: S Local Address = %llu, M Type = %d,M Sender = %llu, M Originator = %llu \n",
+        printf("LP DUMP Node %llu on Rank %llu at TS=%lf: S Local Address = %llu, M Type = %d,M Sender = %llu, M Originator = %llu \n",
                lp->gid, g_tw_mynode, tw_now(lp), s->local_address, m->type, m->sender, m->originator );
     }
 #endif /* DEBUG */
@@ -1660,7 +1660,7 @@ void olsr_event(node_state *s, tw_bf *bf, olsr_msg_data *m, tw_lp *lp)
             msg->level = 0;
 
 #if DEBUG
-	    fprintf(olsr_event_log, "Send Event OLSR LP %d to SA %d, Type %d at TS = %lf \n",
+	    fprintf(olsr_event_log, "Send Event OLSR LP %llu to SA %llu, Type %d at TS = %lf \n",
 		    lp->gid, sa_master_for_level(lp->gid), m->type, ts );
 #endif
 
@@ -1738,7 +1738,7 @@ void sa_master_event(node_state *s, tw_bf *bf, olsr_msg_data *m, tw_lp *lp)
 //    int total_regions = total_nodes / OLSR_MAX_NEIGHBORS;
 
 #if DEBUG
-    fprintf( olsr_event_log, "SA Master Event: LP %d Type %d at TS = %lf RNGs:", lp->gid, m->type, tw_now(lp) );
+    fprintf( olsr_event_log, "SA Master Event: LP %llu Type %d at TS = %lf RNGs:", lp->gid, m->type, tw_now(lp) );
     rng_write_state( lp->rng, olsr_event_log );
 #endif
 
@@ -1851,45 +1851,45 @@ void olsr_final(node_state *s, tw_lp *lp)
 
     if (s->local_address % OLSR_MAX_NEIGHBORS == 0) {
         for (i = 0; i < OLSR_MAX_NEIGHBORS; i++) {
-            printf("node %lu had %d SA packets received.\n", s->local_address, s->SA_per_node[i]);
+            printf("node %llu had %d SA packets received.\n", s->local_address, s->SA_per_node[i]);
         }
     }
 
-    printf("node %lu contains %d neighbors\n", s->local_address, s->num_neigh);
+    printf("node %llu contains %d neighbors\n", s->local_address, s->num_neigh);
     printf("x: %f   \ty: %f\n", s->lng, s->lat);
     for (i = 0; i < s->num_neigh; i++) {
-        printf("   neighbor[%d] is %lu\n", i, s->neighSet[i].neighborMainAddr);
-        printf("   Dy(%lu) is %d\n", s->neighSet[i].neighborMainAddr,
+        printf("   neighbor[%d] is %llu\n", i, s->neighSet[i].neighborMainAddr);
+        printf("   Dy(%llu) is %d\n", s->neighSet[i].neighborMainAddr,
                Dy(s, s->neighSet[i].neighborMainAddr));
     }
 
-    printf("node %lu has %d two-hop neighbors\n", s->local_address,
+    printf("node %llu has %d two-hop neighbors\n", s->local_address,
            s->num_two_hop);
     for (i = 0; i < s->num_two_hop; i++) {
-        printf("   two-hop neighbor[%d] is %lu : %lu\n", i,
+        printf("   two-hop neighbor[%d] is %llu : %llu\n", i,
                s->twoHopSet[i].neighborMainAddr,
                s->twoHopSet[i].twoHopNeighborAddr);
     }
 
-    printf("node %lu has %d MPRs\n", s->local_address,
+    printf("node %llu has %d MPRs\n", s->local_address,
            s->num_mpr);
     for (i = 0; i < s->num_mpr; i++) {
-        printf("   MPR[%d] is %lu\n", i,
+        printf("   MPR[%d] is %llu\n", i,
                s->mprSet[i]);
     }
 
-    printf("node %lu had %d MPR selectors\n", s->local_address, s->num_mpr_sel);
+    printf("node %llu had %d MPR selectors\n", s->local_address, s->num_mpr_sel);
 
-    printf("node %lu routing table\n", s->local_address);
+    printf("node %llu routing table\n", s->local_address);
     for (i = 0; i < s->num_routes; i++) {
-        printf("   route[%d]: dest: %lu \t next %lu \t distance %d\n",
+        printf("   route[%d]: dest: %llu \t next %llu \t distance %d\n",
                i, s->route_table[i].destAddr,
                s->route_table[i].nextAddr, s->route_table[i].distance);
     }
 
-    printf("node %lu top tuples\n", s->local_address);
+    printf("node %llu top tuples\n", s->local_address);
     for (i = 0; i < s->num_top_set; i++) {
-        printf("   top_tuple[%d] dest: %lu   last:  %lu   seq:   %d\n",
+        printf("   top_tuple[%d] dest: %llu   last:  %llu   seq:   %d\n",
                i, s->topSet[i].destAddr, s->topSet[i].lastAddr, s->topSet[i].sequenceNumber);
     }
 

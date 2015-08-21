@@ -21,7 +21,7 @@ int olsr_main(int argc, char *argv[])
     tw_init(&argc, &argv);
 
 #if DEBUG
-    sprintf( log, "olsr-log.%d", g_tw_mynode );
+    sprintf( log, "olsr-log.%ld", g_tw_mynode );
 
     olsr_event_log = fopen( log, "w+");
     if( olsr_event_log == NULL )
@@ -55,7 +55,7 @@ int olsr_main(int argc, char *argv[])
     }
 
 #if DEBUG
-    printf("g_tw_nlp is %lu\n", g_tw_nlp);
+    printf("g_tw_nlp is %llu\n", g_tw_nlp);
 #endif
 
     tw_run();
