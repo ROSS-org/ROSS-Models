@@ -14,7 +14,7 @@ void wifi_station_arrival_rc(wifi_access_point_state * s, tw_bf * bf, wifi_messa
 
 void wifi_access_point_finish(wifi_access_point_state * s, tw_lp * lp);
 
-tw_lptype mylps[] = 
+tw_lptype mylps[] =
 {
     {	(init_f) wifi_access_point_init,
         (pre_run_f) NULL,
@@ -48,7 +48,7 @@ void wifi_access_point_init(wifi_access_point_state * s, tw_lp * lp)
 }
 
 
-void wifi_access_point_arrival(wifi_access_point_state * s, tw_bf * bf, wifi_message * m, tw_lp * lp) 
+void wifi_access_point_arrival(wifi_access_point_state * s, tw_bf * bf, wifi_message * m, tw_lp * lp)
 {
   unsigned int rng_calls=0;
   tw_event *e=NULL;
@@ -60,15 +60,15 @@ void wifi_access_point_arrival(wifi_access_point_state * s, tw_bf * bf, wifi_mes
   s->stations[m->station].access_point_snr = tw_rand_normal_sd(lp->rng,1.0,5.0, &rng_calls);
   // New Function - to add prop loss, but not ready yet.
   //s->stations[m->station].access_point_snr = calcRxPower(txPowerDbm, distance, minDistance, lambda, systemLoss);
-  s->stations[m->station].access_point_success_rate = 
+  s->stations[m->station].access_point_success_rate =
     WiFi_80211b_DsssDqpskCck11_SuccessRate(s->stations[m->station].access_point_snr, num_of_bits);
-  if( tw_rand_normal_sd(lp->rng,0.5,0.1, &rng_calls) < 
-      s->stations[m->station].access_point_success_rate) 
+  if( tw_rand_normal_sd(lp->rng,0.5,0.1, &rng_calls) <
+      s->stations[m->station].access_point_success_rate)
     {
       bf->c1 = 1;
       s->failed_packets++; // count all failed arrivals coming to access point
     }
-  
+
   // schedule event back to AP w/ exponential service time
   e = tw_event_new(lp->gid, tw_rand_exponential(lp->rng, 10.0), lp);
   m_new = (wifi_message *) tw_event_data(e);
@@ -78,9 +78,9 @@ void wifi_access_point_arrival(wifi_access_point_state * s, tw_bf * bf, wifi_mes
 
 }
 
-void wifi_access_point_arrival_rc(wifi_access_point_state * s, tw_bf * bf, wifi_message * m, tw_lp * lp) 
+void wifi_access_point_arrival_rc(wifi_access_point_state * s, tw_bf * bf, wifi_message * m, tw_lp * lp)
 {
-  s->total_packets--;	
+  s->total_packets--;
   // packets coming from access point have much more power and so better snr
   tw_rand_reverse_unif(lp->rng);
   tw_rand_reverse_unif(lp->rng);
@@ -89,11 +89,11 @@ void wifi_access_point_arrival_rc(wifi_access_point_state * s, tw_bf * bf, wifi_
     {
 		s->failed_packets--;
     }
-  
+
 
 }
 
-void wifi_station_arrival(wifi_access_point_state * s, tw_bf * bf, wifi_message * m, tw_lp * lp) 
+void wifi_station_arrival(wifi_access_point_state * s, tw_bf * bf, wifi_message * m, tw_lp * lp)
 {
   unsigned int rng_calls=0;
   tw_event *e=NULL;
@@ -104,15 +104,15 @@ void wifi_station_arrival(wifi_access_point_state * s, tw_bf * bf, wifi_message 
   s->stations[m->station].station_snr = tw_rand_normal_sd(lp->rng,4.0,8.0, &rng_calls);
   // New Function - to add prop loss, but not ready yet.
   //s->stations[m->station].station_snr = calcRxPower (txPowerDbm, distance, minDistance, lambda, systemLoss);
-  s->stations[m->station].station_success_rate = 
+  s->stations[m->station].station_success_rate =
     WiFi_80211b_DsssDqpskCck11_SuccessRate(s->stations[m->station].station_snr, num_of_bits);
-  if( tw_rand_normal_sd(lp->rng,0.5,0.1, &rng_calls) < 
-      s->stations[m->station].station_success_rate) 
+  if( tw_rand_normal_sd(lp->rng,0.5,0.1, &rng_calls) <
+      s->stations[m->station].station_success_rate)
     {
       bf->c1 = 1;
       s->stations[m->station].failed_packets++;
     }
-  
+
   // schedule event back to AP w/ exponential service time
   e = tw_event_new(lp->gid, tw_rand_exponential(lp->rng, 10.0), lp);
   m_new = (wifi_message *) tw_event_data(e);
@@ -121,7 +121,7 @@ void wifi_station_arrival(wifi_access_point_state * s, tw_bf * bf, wifi_message 
   tw_event_send(e);
 }
 
-void wifi_station_arrival_rc(wifi_access_point_state * s, tw_bf * bf, wifi_message * m, tw_lp * lp) 
+void wifi_station_arrival_rc(wifi_access_point_state * s, tw_bf * bf, wifi_message * m, tw_lp * lp)
 {
   tw_rand_reverse_unif(lp->rng);
   tw_rand_reverse_unif(lp->rng);
@@ -133,7 +133,7 @@ void wifi_station_arrival_rc(wifi_access_point_state * s, tw_bf * bf, wifi_messa
 }
 
 
-void wifi_access_point_event_handler(wifi_access_point_state * s, tw_bf * bf, wifi_message * m, tw_lp * lp) 
+void wifi_access_point_event_handler(wifi_access_point_state * s, tw_bf * bf, wifi_message * m, tw_lp * lp)
 {
   switch( m->type )
     {
@@ -174,7 +174,7 @@ void wifi_access_point_finish(wifi_access_point_state * s, tw_lp * lp)
   int i;
   unsigned long long station_failed_packets=0;
   unsigned long long station_total_packets=0;
-  printf("LP %d had %d / %d failed Station to Access Point packets\n", lp->gid, s->failed_packets, s->total_packets);
+  printf("LP %llu had %d / %d failed Station to Access Point packets\n", lp->gid, s->failed_packets, s->total_packets);
 
   for( i=0; i < WIFI_MAX_STATIONS_PER_ACCESS_POINT; i++)
     {
@@ -182,7 +182,7 @@ void wifi_access_point_finish(wifi_access_point_state * s, tw_lp * lp)
 	  station_total_packets += s->stations[i].total_packets;
     }
 
-  printf("LP %d had %llu / %llu failed Access Point to Station packets\n", lp->gid, station_failed_packets, station_total_packets);
+  printf("LP %llu had %llu / %llu failed Access Point to Station packets\n", lp->gid, station_failed_packets, station_total_packets);
 }
 
 
@@ -206,22 +206,22 @@ main(int argc, char **argv, char **env)
   lookahead = 1.0;
   tw_opt_add(app_opt);
   tw_init(&argc, &argv);
-  
+
   g_tw_memory_nqueues = 16;
-  
+
   offset_lpid = g_tw_mynode * nlp_per_pe;
   ttl_lps = tw_nnodes() * g_tw_npe * nlp_per_pe;
-  
+
   g_tw_events_per_pe = (mult * nlp_per_pe * g_wifi_start_events)+ optimistic_memory;
   g_tw_lookahead = lookahead;
-  
+
   tw_define_lps(nlp_per_pe, sizeof(wifi_message), 0);
-  
+
   tw_lp_settype(0, &mylps[0]);
-  
+
   for(i = 1; i < g_tw_nlp; i++)
     tw_lp_settype(i, &mylps[0]);
-  
+
   tw_run();
   tw_end();
 
