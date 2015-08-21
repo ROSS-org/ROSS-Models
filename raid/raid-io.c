@@ -49,22 +49,23 @@ void raid_io_eventhandler( IOState* s, tw_bf* cv, MsgData* m, tw_lp* lp )
         case IO_BUSY:
             s->mode = BUSY;
             // Calculate the time to spend in BUSY mode
-            this_event_length = tw_rand_normal_sd( lp->rng, BUSY_TIME, 
+            this_event_length = tw_rand_normal_sd( lp->rng, BUSY_TIME,
                         STD_DEV * BUSY_TIME, &(m->rc.rng_calls) );
-            s->ttl_busy += this_event_length; 
+            s->ttl_busy += this_event_length;
             next_event_type = IO_IDLE;
             break;
         case IO_IDLE:
             s->mode = IDLE;
             // Calculate the time to spend in IDLE mode
-            this_event_length = tw_rand_normal_sd( lp->rng, IDLE_TIME, 
+            this_event_length = tw_rand_normal_sd( lp->rng, IDLE_TIME,
                         STD_DEV * IDLE_TIME, &(m->rc.rng_calls) );
-            s->ttl_idle += this_event_length; 
+            s->ttl_idle += this_event_length;
             next_event_type = IO_BUSY;
             break;
         default:
             message_error( m->event_type );
-    } 
+            return;
+    }
 
     // Generate and send the BUSY message to self
     raid_io_gen_send( lp->gid, next_event_type, this_event_length, lp );
