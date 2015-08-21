@@ -1,4 +1,4 @@
- 
+
  #include "civilian.h"
  #include "powerline.h"
  #include "substation.h"
@@ -7,7 +7,7 @@
  #include "dissim-main.h"
  #include <stdio.h>
  #include <stdlib.h>
- 
+
  //By Curtis Antolik
 
  tw_peid
@@ -15,7 +15,7 @@
  {
          return (tw_peid) gid / g_tw_nlp;
  }
- 
+
  void
  init(Dissim_State * d, tw_lp * lp)
  {
@@ -50,8 +50,8 @@
             d->c.workPath[0][0] = temp;
             d->c.workPath[0][1] = temp1;
             d->c.workLength = 1;
-            int z = 1;
-            for(z;z<5;z++){
+            int z;
+            for(z=1;z<5;z++){
                 temp = 0.0;
                 temp1 = 1.0;
                 d->c.workPath[z][0] = temp;
@@ -61,14 +61,14 @@
             d->c.workPath[6][0] = temp;
             d->c.workPath[6][0] = temp1;
             d->c.workLength++;
-            
+
             temp = 0.0;
             temp = -1.0;
             d->c.homePath[0][0] = temp;
             d->c.homePath[0][1] = temp1;
             d->c.homeLength = 1;
-            z = 1;
-            for(z;z<5;z++){
+
+            for(z=1;z<5;z++){
                 temp = 0.0;
                 temp1 = -1.0;
                 d->c.homePath[z][0] = temp;
@@ -78,14 +78,14 @@
             d->c.homePath[6][0] = temp;
             d->c.homePath[6][1] = temp1;
             d->c.homeLength++;
-            
+
             temp = 1.0;
             temp1 = 0.0;
             d->c.leisurePath[0][0] = temp;
             d->c.leisurePath[0][1] = temp1;
             d->c.leisureLength = 1;
-            z = 1;
-            for(z;z<5;z++){
+
+            for(z=1;z<5;z++){
                 temp = 1.0;
                 temp1 = 0.0;
                 d->c.leisurePath[z][0] = temp;
@@ -94,15 +94,15 @@
             }
             d->c.leisurePath[6][0] = temp;
             d->c.leisurePath[6][0] = temp1;
-            d->c.leisureLength++;  
-            
+            d->c.leisureLength++;
+
             temp = -1.0;
             temp1 = 0.0;
             d->c.hospitalPath[0][0] = temp;
             d->c.hospitalPath[0][1] = temp1;
             d->c.hospitalLength = 1;
-            z = 1;
-            for(z;z<5;z++){
+
+            for(z=1;z<5;z++){
                 temp = -1.0;
                 temp1 = 0.0;
                 d->c.hospitalPath[z][0] = temp;
@@ -112,14 +112,14 @@
             d->c.hospitalPath[6][0] = temp;
             d->c.hospitalPath[6][0] = temp1;
             d->c.hospitalLength++;
-            
+
             temp = 1.0;
             temp1 = 1.0;
             d->c.escapePath[0][0] = temp;
             d->c.escapePath[0][1] = temp1;
             d->c.escapeLength = 1;
-            z = 1;
-            for(z;z<5;z++){
+
+            for(z=1;z<5;z++){
                 temp = 1.0;
                 temp1 = 1.0;
                 d->c.escapePath[z][0] = temp;
@@ -129,11 +129,11 @@
             d->c.escapePath[6][0] = temp;
             d->c.escapePath[6][1] = temp1;
             d->c.escapeLength++;
-            
+
             tw_event *e, *ec, *ec2, *e3;
             tw_stime ts;
             Msg_Data *m, *m1, *m2, *m3;
-            
+
             d->c.HomeCoordsX = 0;
             d->c.HomeCoordsY = 0;
             d->c.MyCoordsX = d->c.HomeCoordsX;
@@ -155,21 +155,21 @@
             d->c.workPowerUsage = 80;
             d->c.leisurePowerUsage = 10;
             d->c.hospitalPowerUsage = 30;
-            
-            
-            
+
+
+
             ts = tw_rand_exponential(lp->rng, A);
             e = tw_event_new(lp->gid, ts, lp);
             m = (Msg_Data *)tw_event_data(e);
             m->event_type = RELEASEHOME;
             tw_event_send(e);
-            
+
             ts = ts + 800;
             ec = tw_event_new(lp->gid,ts,lp);
             m1 = (Msg_Data *)tw_event_data(ec);
             m1->event_type = CRISISLEVELRISES;
             tw_event_send(ec);
-            
+
             ts = ts + 500;
             ec2 = tw_event_new(lp->gid,ts,lp);
             m2 = (Msg_Data *)tw_event_data(ec2);
@@ -178,7 +178,7 @@
 	     break;
         }
        case BUILDING:
-        {	
+        {
             int i;
             tw_event *e, *e1, *e2, *e3;
             tw_stime ts;
@@ -343,7 +343,7 @@
         }
    }
  }
- 
+
  void
  event_handler(Dissim_State * d, tw_bf * bf, Msg_Data * msg, tw_lp * lp)
  {
@@ -364,7 +364,7 @@
            //if(lp->gid == 200001) printf("checkin %d\n",msg->event_type);
            switch(msg->event_type)
              {
-            
+
                 case HOME:
                     d->c.Home=1;
                     d->c.Traveling=0;
@@ -662,7 +662,7 @@
                         tw_event_send(e1);
                         e = tw_event_new(lp->gid, tw_rand_unif(lp->rng)+0.05, lp);
                         m = (Msg_Data *)tw_event_data(e);
-                        m->event_type = TRAVELWORK;  
+                        m->event_type = TRAVELWORK;
                         tw_event_send(e);
                         e2 = tw_event_new(d->c.homeID,tw_rand_unif(lp->rng)+0.05,lp);
                         m2 = (Msg_Data*)tw_event_data(e2);
@@ -680,7 +680,7 @@
                         tw_event_send(e1);
                         e = tw_event_new(lp->gid, tw_rand_unif(lp->rng)+0.05, lp);
                         m = (Msg_Data *)tw_event_data(e);
-                        m->event_type = TRAVELHOME;  
+                        m->event_type = TRAVELHOME;
                         tw_event_send(e);
                         e2 = tw_event_new(d->c.workID,tw_rand_unif(lp->rng)+0.05,lp);
                         m2 = (Msg_Data*)tw_event_data(e2);
@@ -698,7 +698,7 @@
                         tw_event_send(e1);
                         e = tw_event_new(lp->gid, tw_rand_unif(lp->rng)+0.05, lp);
                         m = (Msg_Data *)tw_event_data(e);
-                        m->event_type = TRAVELHOME;  
+                        m->event_type = TRAVELHOME;
                         tw_event_send(e);
                         e2 = tw_event_new(d->c.leisureID,tw_rand_unif(lp->rng)+0.05,lp);
                         m2 = (Msg_Data*)tw_event_data(e2);
@@ -716,7 +716,7 @@
                         tw_event_send(e1);
                         e = tw_event_new(lp->gid, ts, lp);
                         m = (Msg_Data *)tw_event_data(e);
-                        m->event_type = TRAVELHOME;  
+                        m->event_type = TRAVELHOME;
                         tw_event_send(e);
                         e2 = tw_event_new(lp->gid,tw_rand_unif(lp->rng)+0.05, lp);
                         m2 = (Msg_Data *)tw_event_data(e2);
@@ -769,7 +769,7 @@
                         printf("dark4\n");
                             e = tw_event_new(d->b.powerlineServicing, ts+0, lp);
                             m = (Msg_Data *)tw_event_data(e);
-                            m->event_type = UPDATEDRAW;  
+                            m->event_type = UPDATEDRAW;
                             m->InfoBlock1 = d->b.draw;
                             tw_event_send(e);
                         }
@@ -880,7 +880,7 @@
                     }
                     break;
                     //Send message that no room is available.
-                            
+
                 }
                 case POWERON:
                 {
@@ -946,14 +946,14 @@
                 case UPDATEDRAW:
                 {
                     if((bf->c1 = (d->p.health > 0.0))){
-                        
+
                         printf("dark3\n");
                         int update = msg->InfoBlock1;
                         msg->InfoBlock1 = d->p.draw;
                         d->p.draw = update;
                         e = tw_event_new(d->p.prevJumpID, ts+0, lp);
                         m = (Msg_Data *)tw_event_data(e);
-                        m->event_type = UPDATEDRAW;  
+                        m->event_type = UPDATEDRAW;
                         m->InfoBlock1 = update;
                         tw_event_send(e);
                     }
@@ -1030,14 +1030,14 @@
                         if((bf->c4 = (d->s.draw > d->s.available))){
                             e = tw_event_new(lp->gid, ts+0, lp);
                             m = (Msg_Data *)tw_event_data(e);
-                            m->event_type = DAMAGE;  
+                            m->event_type = DAMAGE;
                             m->InfoBlock1 = d->s.health;
                             tw_event_send(e);
                         }
                         else {
                             e = tw_event_new(d->s.prevJumpID, 0, lp);
                             m = (Msg_Data *)tw_event_data(e);
-                            m->event_type = UPDATEDRAW;  
+                            m->event_type = UPDATEDRAW;
                             m->InfoBlock1 = update;
                             tw_event_send(e);
                         }
@@ -1067,7 +1067,7 @@
                 }
                 case DAMAGE:
                 {
-                    
+
                     /*e1 = tw_event_new(lp->gid+1500000, 0 + 0, lp);
                     m1 = (Msg_Data *)tw_event_data(e1);
                     m1->event_type = CRISISLEVELRISES;
@@ -1120,7 +1120,7 @@
              {
                 case UPDATEDRAW:
                 {
-                    //printf("generatore %llu hit %d\n",lp->gid,d->dissimType); 
+                    //printf("generatore %llu hit %d\n",lp->gid,d->dissimType);
                     if((bf->c1 = (d->g.health > 0.0))){
                         int update = msg->InfoBlock1;
                         msg->InfoBlock1 = d->g.draw;
@@ -1218,7 +1218,7 @@ void rc_event_handler(Dissim_State * d, tw_bf * bf, Msg_Data * msg, tw_lp * lp)
            tw_rand_reverse_unif(lp->rng);
            switch(msg->event_type)
              {
-            
+
                 case HOME:
                     d->c.Home=0;
                     d->c.Traveling=1;
@@ -1413,7 +1413,7 @@ void rc_event_handler(Dissim_State * d, tw_bf * bf, Msg_Data * msg, tw_lp * lp)
                 case UPDATEOCCUPANCY:
                     d->c.familyPresent=msg->InfoBlock1;
                     break;
-                 
+
              }
         }
         case BUILDING:
@@ -1450,7 +1450,7 @@ void rc_event_handler(Dissim_State * d, tw_bf * bf, Msg_Data * msg, tw_lp * lp)
                         }
                         if(bf->c4){
                         }
-                        break;  
+                        break;
                     }
                     break;
                 }
@@ -1467,9 +1467,9 @@ void rc_event_handler(Dissim_State * d, tw_bf * bf, Msg_Data * msg, tw_lp * lp)
                     int update = msg->InfoBlock1;
                     d->b.health -= update;
                     break;
-                }                
+                }
                 case UPDATEOCCUPANCY:
-                { 
+                {
                     int z = 0;
                     int q = 0;
                     int occupant = msg->InfoBlock1;
@@ -1508,7 +1508,7 @@ void rc_event_handler(Dissim_State * d, tw_bf * bf, Msg_Data * msg, tw_lp * lp)
                 }
                 case POWEROFF:
                 {
-                             
+
                 //printf("Substation %llu TAKING THE FALL FOR THE MOTHERLAND\n",lp->gid);
 
                     if(bf->c1){
@@ -1697,7 +1697,7 @@ void rc_event_handler(Dissim_State * d, tw_bf * bf, Msg_Data * msg, tw_lp * lp)
         }
    }
  }
-} 
+}
 void
  final(Dissim_State * d, tw_lp * lp)
  {
@@ -1725,30 +1725,30 @@ void
          //TWOPT_UINT("memory", opt_mem, "optimistic memory"),
          TWOPT_END()
  };
- 
+
  int
  main(int argc, char **argv, char **env)
  {
          int i;
- 
+
          //tw_opt_add(app_opt);
          tw_init(&argc, &argv);
- 
+
          nlp_per_pe /= (tw_nnodes() * g_tw_npe);
          g_tw_events_per_pe =(planes_per_airport * nlp_per_pe / g_tw_npe) + opt_mem;
- 
+
          tw_define_lps(nlp_per_pe, sizeof(Msg_Data), 0);
- 
+
          for(i = 0; i < g_tw_nlp; i++)
                  tw_lp_settype(i, &disaster_lps[0]);
- 
+
          tw_run();
- 
+
          if(tw_ismaster())
          {
          }
- 
+
          tw_end();
-         
+
          return 0;
  }
