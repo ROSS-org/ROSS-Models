@@ -12,7 +12,7 @@ void disksim_event_handler(disksim_state * s, tw_bf * bf, disksim_message * m, t
 void disksim_event_handler_rc(disksim_state * s, tw_bf * bf, disksim_message * m, tw_lp * lp);
 void disksim_finish(disksim_state * s, tw_lp * lp);
 
-tw_lptype       mylps[] = 
+tw_lptype       mylps[] =
   {
     {(init_f) disksim_ras_init,
      (pre_run_f) NULL,
@@ -67,7 +67,7 @@ void disksim_ras_finish(disksim_ras_state * s, tw_lp * lp)
 /* 	       lp->gid, i, s->disk_failure_per_hour[i]); */
       total_disk_failures += s->disk_failure_per_hour[i];
     }
-  printf("RAS LOGGER %lu: TOTAL DISK FAILURES FOR THE 5 YEARs ARE %llu \n", 
+  printf("RAS LOGGER %llu: TOTAL DISK FAILURES FOR THE 5 YEARs ARE %llu \n",
 	 lp->gid, total_disk_failures );
 }
 
@@ -115,15 +115,15 @@ void disksim_event_handler(disksim_state * s, tw_bf * bf, disksim_message * m, t
       break;
 
     default:
-      printf("Bad disksim_distribution setting (%d)..exiting now!! \n", 
+      printf("Bad disksim_distribution setting (%d)..exiting now!! \n",
 	     disksim_distribution);
       exit(-1);
     }
 
-  // zeroth LP on each PE is the ras logger assuming LINEAR default mapping!! 
+  // zeroth LP on each PE is the ras logger assuming LINEAR default mapping!!
   dest_lpid = g_tw_nlp * disksim_map( lp->gid );
   e = tw_event_new( dest_lpid, fail_time, lp);
- 
+
   failure = (disksim_message *)tw_event_data(e);
   failure->time_of_failure = tw_now(lp) + fail_time;
   failure->disk_that_failed = lp->gid;
@@ -133,7 +133,7 @@ void disksim_event_handler(disksim_state * s, tw_bf * bf, disksim_message * m, t
       s->number_of_failures++;
     }
   tw_event_send( e );
-  
+
   /* send next test to self */
   tw_event_send(tw_event_new(lp->gid, (tw_stime)fail_time, lp));
 }
@@ -179,7 +179,7 @@ main(int argc, char **argv, char **env)
 
 	offset_lpid = g_tw_mynode * nlp_per_pe;
 	ttl_lps = tw_nnodes() * g_tw_npe * nlp_per_pe;
-	g_tw_events_per_pe = (mult * nlp_per_pe * g_disksim_start_events) + 
+	g_tw_events_per_pe = (mult * nlp_per_pe * g_disksim_start_events) +
 				optimistic_memory;
 	//g_tw_rng_default = TW_FALSE;
 	g_tw_lookahead = lookahead;
