@@ -970,7 +970,7 @@
                         tw_event_send(e);
                         e1 = tw_event_new(d->p.prevJumpID, ts+0, lp);
                         m1 = (Msg_Data *)tw_event_data(e1);
-                        m1->event_type - UPDATEDRAW;
+                        m1->event_type = UPDATEDRAW;
                         m1->InfoBlock1 = d->p.available;
                         tw_event_send(e1);
                     }
