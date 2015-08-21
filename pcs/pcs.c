@@ -869,7 +869,6 @@ void pcs_grid_mapping()
   tw_lpid         lpid, kpid;
   tw_lpid         num_cells_per_kp, vp_per_proc;
   tw_lpid         local_lp_count;
-  tw_lpid         local_kp_count;
 
   num_cells_per_kp = (NUM_CELLS_X * NUM_CELLS_Y) / (NUM_VP_X * NUM_VP_Y);
   vp_per_proc = (NUM_VP_X * NUM_VP_Y) / ((tw_nnodes() * g_tw_npe)) ;
@@ -949,7 +948,7 @@ main(int argc, char **argv)
       printf("CALL TIME MEAN   = %f\n", CALL_TIME_MEAN);
       printf("NUM CELLS X      = %d\n", NUM_CELLS_X);
       printf("NUM CELLS Y      = %d\n", NUM_CELLS_Y);
-      printf("NUM KPs per PE   = %llu \n", g_tw_nkp);
+      printf("NUM KPs per PE   = %lu \n", g_tw_nkp);
       printf("NUM LPs per PE   = %llu \n", g_tw_nlp);
       printf("g_vp_per_proc    = %llu \n", g_vp_per_proc);
       printf("/**********************************************/\n");
