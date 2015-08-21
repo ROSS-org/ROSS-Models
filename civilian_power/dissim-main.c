@@ -43,7 +43,6 @@
         case CIVILIAN:
         {
 
-            int i;
             int temp, temp1;
             temp = 0.0;
             temp1 = 1.0;
@@ -130,15 +129,14 @@
             d->c.escapePath[6][1] = temp1;
             d->c.escapeLength++;
 
-            tw_event *e, *ec, *ec2, *e3;
+            tw_event *e, *ec, *ec2;
             tw_stime ts;
-            Msg_Data *m, *m1, *m2, *m3;
+            Msg_Data *m, *m1, *m2;
 
             d->c.HomeCoordsX = 0;
             d->c.HomeCoordsY = 0;
             d->c.MyCoordsX = d->c.HomeCoordsX;
             d->c.MyCoordsY = d->c.HomeCoordsY;
-            int k = lp->gid%5;
             d->c.Home = 1;
             d->c.homeID = 4;
             d->c.workID = 5;
@@ -179,10 +177,9 @@
         }
        case BUILDING:
         {
-            int i;
-            tw_event *e, *e1, *e2, *e3;
+            tw_event *e; //, *e1, *e2, *e3;
             tw_stime ts;
-            Msg_Data *m, *m1, *m2, *m3;
+            Msg_Data *m; //, *m1, *m2, *m3;
             //Coords awaiting file parsing
             d->b.hasPower = 1;
             d->b.MyCoordsX = 0;
@@ -224,10 +221,9 @@
         }
         case POWERLINE:
         {
-            int i;
-            tw_event *e, *ec, *ec2;
-            tw_stime ts;
-            Msg_Data *m, *m1, *m2;
+            // tw_event *e, *ec, *ec2;
+            // tw_stime ts;
+            // Msg_Data *m, *m1, *m2;
             d->p.MyCoordsX = 0;
             d->p.MyCoordsY = lp->gid;
             if(lp->gid == 6){
@@ -273,10 +269,9 @@
         {
             //if(lp->gid%40 != 19)
               //  printf("%d \n",d->dissimType);
-            int i;
-            tw_event *e, *ec, *ec2;
-            tw_stime ts;
-            Msg_Data *m, *m1, *m2;
+            // tw_event *e;
+            // tw_stime ts;
+            // Msg_Data *m;
             d->s.MyCoordsX = 0;
             d->s.MyCoordsY = lp->gid;
             d->s.nextIDEnd = 1;
@@ -307,10 +302,9 @@
         }
         case GENERATOR:
         {
-            int i;
-            tw_event *e, *ec, *ec2;
+            tw_event *e, *ec;
             tw_stime ts;
-            Msg_Data *m, *m1, *m2;
+            Msg_Data *m, *m1;
             d->g.MyCoordsX = 0;
             d->g.MyCoordsY = lp->gid;
             d->g.jumpArrayLength = 2;
@@ -352,14 +346,9 @@
    switch(d->dissimType){
         case CIVILIAN:
         {
-            int rand_result;
-           tw_lpid dst_lp;
            tw_stime ts;
            tw_event *e, *e1, *e2, *e3;
            Msg_Data *m, *m1, *m2, *m3;
-           FILE *fp;
-           char buffer[50];
-           char buffer2[100];
            ts = tw_rand_unif(lp->rng)+0.05;
            //if(lp->gid == 200001) printf("checkin %d\n",msg->event_type);
            switch(msg->event_type)
@@ -748,15 +737,9 @@
         }
         case BUILDING:
         {
-           int rand_result;
-           tw_lpid dst_lp;
-           tw_stime ts, ts1;
+           tw_stime ts;
            tw_event *e, *e1, *e2;
            Msg_Data *m, *m1, *m2;
-           FILE *fp;
-           char buffer[50];
-           char buffer2[100];
-           MPI_Status status;
            ts = tw_rand_unif(lp->rng)+0.05;
            //ts1 = tw_rand_unif(lp->rng);
            switch(msg->event_type)
@@ -822,11 +805,11 @@
                 }
                 case UPDATEOCCUPANCY:
                 {
-                    int z = 0;
+                    int z;
                     int q = 0;
                     int occupant = msg->InfoBlock1;
                     //If the person is present and telling us they are leaving, remove them
-                    for(z; z < d->b.capacity; z++){
+                    for(z = 0; z < d->b.capacity; z++){
                         if((bf->c1 = (d->b.occupantPresent[z] == 1))){
                             if((bf->c2 = (d->b.occupants[z] == occupant))){
                                 msg->InfoBlock2 = z+1;
@@ -834,10 +817,10 @@
                                 d->b.occupantPresent[z] = 0;
                                 d->b.occupancy--;
                         printf("dark4\n");
-                                int i = 0;
+                                int i;
                                 tw_event *stuff[d->b.occupancy];
                                 Msg_Data *msgs[d->b.occupancy];
-                                for(i; i < d->b.capacity; i++){
+                                for(i = 0; i < d->b.capacity; i++){
                                     if(d->b.occupantPresent[i] == 1){
                                         stuff[i] = tw_event_new(d->b.occupants[i], tw_rand_unif(lp->rng)+0.05,lp);
                                         msgs[i] = (Msg_Data *)tw_event_data(stuff[i]);
@@ -855,18 +838,17 @@
                         break;
                     }
                     //If the person is new and we have room, add them
-                    z = 0;
-                    for(z; z < d->b.capacity; z++){
+                    for(z = 0; z < d->b.capacity; z++){
                         if((bf->c3 = (d->b.occupantPresent[z] == 0))){
                             msg->InfoBlock2 = -1*z;
                         printf("dark4\n");
                             d->b.occupants[z] = occupant;
                             d->b.occupantPresent[z] = 1;
                             d->b.occupancy++;
-                            int i = 0;
+                            int i;
                             tw_event *stuff[d->b.occupancy];
                             Msg_Data *msgs[d->b.occupancy];
-                            for(i; i < d->b.capacity; i++){
+                            for(i = 0; i < d->b.capacity; i++){
                                 if(d->b.occupantPresent[i] == 1){
                                     stuff[i] = tw_event_new(d->b.occupants[i], tw_rand_unif(lp->rng)+0.05,lp);
                                     msgs[i] = (Msg_Data *)tw_event_data(stuff[i]);
@@ -886,11 +868,11 @@
                 {
                     if((bf->c1 = (!d->b.hasPower))){
                         d->b.hasPower = 1;
-                        int i = 0;
+                        int i;
                         tw_event *stuff[d->b.occupancy];
                         printf("dark4\n");
                         Msg_Data *msgs[d->b.occupancy];
-                        for(i; i < d->b.capacity; i++){
+                        for(i = 0; i < d->b.capacity; i++){
                             if(d->b.occupantPresent[i] == 1){
                                 stuff[i] = tw_event_new(d->b.occupants[i], tw_rand_unif(lp->rng)+0.05,lp);
                                 msgs[i] = (Msg_Data *)tw_event_data(stuff[i]);
@@ -907,13 +889,12 @@
                     if((bf->c1 = (d->b.hasPower))){
                         printf("dark4\n");
                         d->b.hasPower = 0;
-                        int z = 0;
                         tw_rand_unif(lp->rng);
                         tw_rand_reverse_unif(lp->rng);
-                        int i = 0;
+                        int i;
                         tw_event *stuff[d->b.occupancy];
                         Msg_Data *msgs[d->b.occupancy];
-                        for(i; i < d->b.capacity; i++){
+                        for(i = 0; i < d->b.capacity; i++){
                             if(d->b.occupantPresent[i] == 1){
                                 stuff[i] = tw_event_new(d->b.occupants[i], tw_rand_unif(lp->rng)+0.05,lp);
                                 msgs[i] = (Msg_Data *)tw_event_data(stuff[i]);
