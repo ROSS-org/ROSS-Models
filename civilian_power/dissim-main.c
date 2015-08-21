@@ -341,8 +341,6 @@
  void
  event_handler(Dissim_State * d, tw_bf * bf, Msg_Data * msg, tw_lp * lp)
  {
-   char buffer[50];
-   char buffer2[100];
    switch(d->dissimType){
         case CIVILIAN:
         {
@@ -911,15 +909,9 @@
         }
         case POWERLINE:
         {
-           int rand_result;
-           tw_lpid dst_lp;
-           tw_stime ts, ts1;
+           tw_stime ts;
            tw_event *e, *e1;
            Msg_Data *m, *m1;
-           FILE *fp;
-           char buffer[50];
-           char buffer2[100];
-           MPI_Status status;
             ts = tw_rand_unif(lp->rng)+0.05;
             //ts1 = tw_rand_unif(lp->rng);
            switch(msg->event_type)
@@ -988,15 +980,9 @@
         }
         case SUBSTATION:
         {
-           int rand_result;
-           tw_lpid dst_lp;
-           tw_stime ts, ts1;
-           tw_event *e, *e1;
-           Msg_Data *m, *m1;
-           FILE *fp;
-           char buffer[50];
-           char buffer2[100];
-           MPI_Status status;
+           tw_stime ts;
+           tw_event *e;
+           Msg_Data *m;
            ts = tw_rand_unif(lp->rng)+0.05;
            //ts1 = tw_rand_unif(lp->rng);
            switch(msg->event_type)
@@ -1032,10 +1018,10 @@
                         int update = msg->InfoBlock1;
                         msg->InfoBlock1 = d->s.available;
                         d->s.available = update;
-                        int i = 0;
+                        int i;
                         tw_event *es[d->s.nextIDEnd];
                         Msg_Data *ms[d->s.nextIDEnd];
-                        for (i; i < d->s.nextIDEnd; i++){
+                        for (i = 0; i < d->s.nextIDEnd; i++){
                             es[i] = tw_event_new(d->s.nextJumpIDs[i], ts+0, lp);
                             ms[i] = (Msg_Data *)tw_event_data(es[i]);
                             ms[i]->event_type = UPDATEAVAILABLE;
@@ -1060,10 +1046,10 @@
                     if((bf->c1 = (d->s.health <= 0.0))){
                         msg->InfoBlock2 = d->s.available;
                         d->s.available = 0;
-                        int i = 0;
+                        int i;
                         tw_event *es[d->s.nextIDEnd];
                         Msg_Data *ms[d->s.nextIDEnd];
-                        for (i; i < d->s.nextIDEnd; i++){
+                        for (i = 0; i < d->s.nextIDEnd; i++){
                             es[i] = tw_event_new(d->s.nextJumpIDs[i], ts+0, lp);
                             ms[i] = (Msg_Data *)tw_event_data(es[i]);
                             ms[i]->event_type = UPDATEAVAILABLE;
@@ -1085,17 +1071,11 @@
         }
         case GENERATOR:
         {
-           int rand_result;
-           tw_lpid dst_lp;
-           tw_stime ts;
+           // tw_stime ts;
            tw_event *e;
            Msg_Data *m;
            Msg_Data *ms[d->g.jumpArrayLength];
            tw_event *es[d->g.jumpArrayLength];
-           FILE *fp;
-           char buffer[50];
-           char buffer2[100];
-           MPI_Status status;
            //ts = tw_rand_unif(lp->rng);
            switch(msg->event_type)
              {
@@ -1126,9 +1106,9 @@
                         int update = msg->InfoBlock1;
                         msg->InfoBlock1 = d->g.available;
                         d->g.available = update;
-                        int i = 0;
+                        int i;
                         printf("dark2\n");
-                        for(i; i < d->g.jumpArrayLength; i++){
+                        for(i = 0; i < d->g.jumpArrayLength; i++){
                         //if(lp->gid == 0)    printf("Generator - %d Messages sent %llu\n",i,lp->gid);
                             es[i] = tw_event_new(d->g.nextJumpIDs[i], 0 + 0, lp);
                             ms[i] = (Msg_Data *)tw_event_data(es[i]);
@@ -1153,8 +1133,8 @@
                     if((bf->c1 = (d->g.health <= 0.0))){
                         msg->InfoBlock2 = d->g.available;
                         d->g.available = 0;
-                        int i = 0;
-                        for(i; i < d->g.jumpArrayLength; i++){
+                        int i;
+                        for(i = 0; i < d->g.jumpArrayLength; i++){
                             es[i] = tw_event_new(d->g.nextJumpIDs[i], 0 + 0, lp);
                             ms[i] = (Msg_Data *)tw_event_data(es[i]);
                             ms[i]->event_type = UPDATEAVAILABLE;
@@ -1178,8 +1158,6 @@
 }
 void rc_event_handler(Dissim_State * d, tw_bf * bf, Msg_Data * msg, tw_lp * lp)
  {
-   char buffer[50];
-   char buffer2[100];
    /*if(lp->gid%2000 == 1999){
    printf("hit %d %llu\n", msg->event_type, lp->gid);
    }*/
@@ -1188,14 +1166,6 @@ void rc_event_handler(Dissim_State * d, tw_bf * bf, Msg_Data * msg, tw_lp * lp)
    switch(d->dissimType){
         case CIVILIAN:
         {
-            int rand_result;
-           tw_lpid dst_lp;
-           tw_stime ts;
-           tw_event *e;
-           Msg_Data *m;
-           FILE *fp;
-           char buffer[50];
-           char buffer2[100];
            tw_rand_reverse_unif(lp->rng);
            switch(msg->event_type)
              {
@@ -1399,15 +1369,6 @@ void rc_event_handler(Dissim_State * d, tw_bf * bf, Msg_Data * msg, tw_lp * lp)
         }
         case BUILDING:
         {
-           int rand_result;
-           tw_lpid dst_lp;
-           tw_stime ts, ts1;
-           tw_event *e, *e1;
-           Msg_Data *m, *m1;
-           FILE *fp;
-           char buffer[50];
-           char buffer2[100];
-           MPI_Status status;
            tw_rand_reverse_unif(lp->rng);
            //tw_rand_reverse_unif(lp->rng);
            switch(msg->event_type)
@@ -1451,15 +1412,12 @@ void rc_event_handler(Dissim_State * d, tw_bf * bf, Msg_Data * msg, tw_lp * lp)
                 }
                 case UPDATEOCCUPANCY:
                 {
-                    int z = 0;
-                    int q = 0;
-                    int occupant = msg->InfoBlock1;
                     //If the person is present and telling us they are leaving, remove them
                     if(msg->InfoBlock2 > 0){
                         d->b.occupants[msg->InfoBlock2 - 1] = msg->InfoBlock1;
                         d->b.occupantPresent[msg->InfoBlock2 - 1] = 1;
-                        int i = 0;
-                        for(i;i<d->b.occupancy;i++){
+                        int i;
+                        for(i = 0;i<d->b.occupancy;i++){
                             tw_rand_reverse_unif(lp->rng);
                         }
                         d->b.occupancy++;
@@ -1467,8 +1425,8 @@ void rc_event_handler(Dissim_State * d, tw_bf * bf, Msg_Data * msg, tw_lp * lp)
                     else if(msg->InfoBlock2 <= 0){
                         d->b.occupants[-1*(msg->InfoBlock2)] = -1;
                         d->b.occupantPresent[-1*(msg->InfoBlock2)] = 0;
-                        int i = 0;
-                        for(i;i<d->b.occupancy;i++){
+                        int i;
+                        for(i = 0;i<d->b.occupancy;i++){
                             tw_rand_reverse_unif(lp->rng);
                         }
                         d->b.occupancy--;
@@ -1479,8 +1437,8 @@ void rc_event_handler(Dissim_State * d, tw_bf * bf, Msg_Data * msg, tw_lp * lp)
                 {
                     if(bf->c1){
                         d->b.hasPower = 0;
-                        int i = 0;
-                        for(i;i<d->b.occupancy;i++){
+                        int i;
+                        for(i = 0;i<d->b.occupancy;i++){
                             tw_rand_reverse_unif(lp->rng);
                         }
                         break;
@@ -1494,8 +1452,8 @@ void rc_event_handler(Dissim_State * d, tw_bf * bf, Msg_Data * msg, tw_lp * lp)
 
                     if(bf->c1){
                         d->b.hasPower = 1;
-                        int i = 0;
-                        for(i;i<d->b.occupancy;i++){
+                        int i;
+                        for(i = 0;i<d->b.occupancy;i++){
                             tw_rand_reverse_unif(lp->rng);
                         }
                         break;
@@ -1505,15 +1463,6 @@ void rc_event_handler(Dissim_State * d, tw_bf * bf, Msg_Data * msg, tw_lp * lp)
         }
         case POWERLINE:
         {
-           int rand_result;
-           tw_lpid dst_lp;
-           tw_stime ts, ts1;
-           tw_event *e, *e1;
-           Msg_Data *m, *m1;
-           FILE *fp;
-           char buffer[50];
-           char buffer2[100];
-           MPI_Status status;
             tw_rand_reverse_unif(lp->rng);
             //tw_rand_reverse_unif(lp->rng);
            switch(msg->event_type)
@@ -1555,15 +1504,6 @@ void rc_event_handler(Dissim_State * d, tw_bf * bf, Msg_Data * msg, tw_lp * lp)
         }
         case SUBSTATION:
         {
-           int rand_result;
-           tw_lpid dst_lp;
-           tw_stime ts, ts1;
-           tw_event *e, *e1;
-           Msg_Data *m, *m1;
-           FILE *fp;
-           char buffer[50];
-           char buffer2[100];
-           MPI_Status status;
            tw_rand_reverse_unif(lp->rng);
            //tw_rand_reverse_unif(lp->rng);
            switch(msg->event_type)
@@ -1587,8 +1527,8 @@ void rc_event_handler(Dissim_State * d, tw_bf * bf, Msg_Data * msg, tw_lp * lp)
                         int update = msg->InfoBlock1;
                         msg->InfoBlock1 = d->s.available;
                         d->s.available = update;
-                        int i = 0;
-                        for (i; i < d->s.nextIDEnd; i++){
+                        int i;
+                        for (i = 0; i < d->s.nextIDEnd; i++){
                             tw_rand_reverse_unif(lp->rng);
                         }
                     }
@@ -1601,8 +1541,8 @@ void rc_event_handler(Dissim_State * d, tw_bf * bf, Msg_Data * msg, tw_lp * lp)
                     d->s.health += update;
                     if(bf->c1){
                         d->s.available = msg->InfoBlock2;
-                        int i = 0;
-                        for (i; i < d->s.nextIDEnd; i++){
+                        int i;
+                        for (i = 0; i < d->s.nextIDEnd; i++){
                             tw_rand_reverse_unif(lp->rng);
                         }
                     }
@@ -1618,16 +1558,7 @@ void rc_event_handler(Dissim_State * d, tw_bf * bf, Msg_Data * msg, tw_lp * lp)
         }
         case GENERATOR:
         {
-           int rand_result;
-           tw_lpid dst_lp;
-           tw_stime ts;
-           tw_event *e;
-           Msg_Data *m;
-           FILE *fp;
-           char buffer[50];
-           char buffer2[100];
-           MPI_Status status;
-         //tw_rand_reverse_unif(lp->rng);
+        //tw_rand_reverse_unif(lp->rng);
            switch(msg->event_type)
              {
                 case UPDATEDRAW:
@@ -1647,8 +1578,8 @@ void rc_event_handler(Dissim_State * d, tw_bf * bf, Msg_Data * msg, tw_lp * lp)
                         int update = msg->InfoBlock1;
                         msg->InfoBlock1 = d->g.available;
                         d->g.available = update;
-                        int i = 0;
-                        for(i; i < d->g.jumpArrayLength; i++){
+                        int i;
+                        for(i = 0; i < d->g.jumpArrayLength; i++){
                             //tw_rand_reverse_unif(lp->rng);
                         }
                         //tw_rand_reverse_unif(lp->rng);
@@ -1661,8 +1592,8 @@ void rc_event_handler(Dissim_State * d, tw_bf * bf, Msg_Data * msg, tw_lp * lp)
                     d->g.health += update;
                     if(bf->c1){
                         d->g.available = msg->InfoBlock2;
-                        int i = 0;
-                        for(i; i < d->g.jumpArrayLength; i++){
+                        int i;
+                        for(i = 0; i < d->g.jumpArrayLength; i++){
                             //tw_rand_reverse_unif(lp->rng);
                         }
                     }
