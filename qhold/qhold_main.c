@@ -38,7 +38,7 @@ int qhold_main(int argc, char *argv[])
     g_tw_events_per_pe = (nlp_per_pe * population) +
     optimistic_memory;
     
-	tw_define_lps(nlp_per_pe, sizeof(q_message), 0);
+	tw_define_lps(nlp_per_pe, sizeof(q_message));
     
 	for (i = 0; i < g_tw_nlp; i++) {
 		tw_lp_settype(i, &qhold_lps[0]);

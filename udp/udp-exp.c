@@ -450,7 +450,7 @@ main(int argc, char **argv)
   printf("    Buffers Allocated Per PE = %d\n", g_tw_events_per_pe);
   printf("\n\n");
 
-  tw_define_lps(TWnlp, sizeof(struct Packet_Data), 0);
+  tw_define_lps(TWnlp, sizeof(struct Packet_Data));
   //if (tw_init(mylps, TWnpe, TWnkp, TWnlp, sizeof(struct Packet_Data)))
 
 

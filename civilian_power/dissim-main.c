@@ -1649,7 +1649,7 @@ void
          nlp_per_pe /= (tw_nnodes() * g_tw_npe);
          g_tw_events_per_pe =(planes_per_airport * nlp_per_pe / g_tw_npe) + opt_mem;
 
-         tw_define_lps(nlp_per_pe, sizeof(Msg_Data), 0);
+         tw_define_lps(nlp_per_pe, sizeof(Msg_Data));
 
          for(i = 0; i < g_tw_nlp; i++)
                  tw_lp_settype(i, &disaster_lps[0]);

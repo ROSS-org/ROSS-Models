@@ -41,7 +41,7 @@ int olsr_main(int argc, char *argv[])
     nlp_per_pe += nlp_per_pe / OLSR_MAX_NEIGHBORS;
 
     g_tw_events_per_pe =  OLSR_MAX_NEIGHBORS / 2 * nlp_per_pe  + 65536;
-    tw_define_lps(nlp_per_pe, sizeof(olsr_msg_data), 0);
+    tw_define_lps(nlp_per_pe, sizeof(olsr_msg_data));
 
     for(i = 0; i < OLSR_END_EVENT; i++)
         g_olsr_event_stats[i] = 0;

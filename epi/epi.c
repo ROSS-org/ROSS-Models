@@ -336,7 +336,7 @@ main(int argc, char **argv, char **env)
 	g_tw_events_per_pe = (g_tw_nlp / g_tw_npe) * 4;
 	g_tw_memory_nqueues = 2;
 
-	tw_define_lps(g_tw_nlp, sizeof(epi_message), 0);
+	tw_define_lps(g_tw_nlp, sizeof(epi_message));
 
 	epi_disease_init();
 

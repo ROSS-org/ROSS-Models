@@ -259,7 +259,7 @@ main(int argc, char **argv, char **env)
 	g_tw_events_per_pe = (mult * nlp_per_pe * g_mem_start_events) + 
 				optimistic_memory;
 
-	tw_define_lps(nlp_per_pe, sizeof(mem_message), 0);
+	tw_define_lps(nlp_per_pe, sizeof(mem_message));
 
 	for(i = 0; i < nlp_per_pe; i++)
 		tw_lp_settype(i, &mylps[0]);

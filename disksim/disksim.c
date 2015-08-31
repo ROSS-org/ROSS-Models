@@ -184,7 +184,7 @@ main(int argc, char **argv, char **env)
 	//g_tw_rng_default = TW_FALSE;
 	g_tw_lookahead = lookahead;
 
-	tw_define_lps(nlp_per_pe, sizeof(disksim_message), 0);
+	tw_define_lps(nlp_per_pe, sizeof(disksim_message));
 
 	tw_lp_settype(0, &mylps[0]);
 

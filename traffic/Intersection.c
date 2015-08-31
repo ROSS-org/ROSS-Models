@@ -276,7 +276,7 @@ int main(int argc, char * argv[])
 	g_tw_custom_initial_mapping = &traffic_grid_mapping;
 	g_tw_custom_lp_global_to_local_map = &CellMapping_to_lp;
 
-	tw_define_lps(nlp_per_pe, sizeof(Msg_Data), 0);
+	tw_define_lps(nlp_per_pe, sizeof(Msg_Data));
 
 	for(i = 0; i < g_tw_nlp; i++)
 		tw_lp_settype(i, &mylps[0]);

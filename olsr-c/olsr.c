@@ -913,7 +913,7 @@ main(int argc, char **argv, char **env)
   g_tw_custom_initial_mapping = &olsr_grid_mapping;
   g_tw_custom_lp_global_to_local_map = &olsr_map_to_lp;
   
-  tw_define_lps(nlp_per_pe, sizeof(olsr_message), 0);
+  tw_define_lps(nlp_per_pe, sizeof(olsr_message));
   
   tw_run();
 

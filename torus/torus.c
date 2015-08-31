@@ -1128,7 +1128,7 @@ main(int argc, char **argv, char **env)
         g_tw_custom_lp_global_to_local_map=&torus_mapping_to_lp;
 
 	g_tw_events_per_pe = mem_factor * 1024 * (nlp_nodes_per_pe/g_tw_npe + nlp_mpi_procs_per_pe/g_tw_npe) + opt_mem;
-	tw_define_lps(nlp_nodes_per_pe + nlp_mpi_procs_per_pe, sizeof(nodes_message), 0);
+	tw_define_lps(nlp_nodes_per_pe + nlp_mpi_procs_per_pe, sizeof(nodes_message));
 
 	head_delay = (1 / link_bandwidth) * chunk_size;
 	

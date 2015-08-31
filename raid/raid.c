@@ -91,7 +91,7 @@ int main( int argc, char** argv )
     g_tw_events_per_pe = ( g_nlp_per_pe * g_raid_start_events ) + g_add_mem;
 
     // Define the LPs
-    tw_define_lps( g_nlp_per_pe, sizeof( MsgData ), 0 );
+    tw_define_lps( g_nlp_per_pe, sizeof( MsgData ));
 
     for( i = 0; i < g_nfs_per_pe; ++i )
     {

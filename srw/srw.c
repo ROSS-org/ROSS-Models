@@ -316,7 +316,7 @@ int srw_main(int argc, char *argv[])
   tw_init(&argc, &argv);
 
   /* Must call this to properly set g_tw_nlp */
-  tw_define_lps(num_lps_per_pe, sizeof(srw_msg_data), 0);
+  tw_define_lps(num_lps_per_pe, sizeof(srw_msg_data));
 
 #ifdef WITH_NETDMF
   /* IF we ARE using NETDMF... */

@@ -67,8 +67,7 @@ int rng_main(int argc, char *argv[])
 
     tw_init(&argc, &argv);
     
-    // Note: you must pass the same value as the last arg. to tw_define_lps()
-    tw_define_lps(1, sizeof(message), local_seed);
+    tw_define_lps(1, sizeof(message));
     
     for (i = 0; i < g_tw_nlp; i++) {
         tw_lp_settype(i, &rng_lps[0]);

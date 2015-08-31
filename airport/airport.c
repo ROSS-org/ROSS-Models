@@ -194,7 +194,7 @@ main(int argc, char **argv, char **env)
 
     g_tw_lookahead = lookahead;
 
-	tw_define_lps(nlp_per_pe, sizeof(airport_message), 0);
+	tw_define_lps(nlp_per_pe, sizeof(airport_message));
 
 	for(i = 0; i < g_tw_nlp; i++)
 		tw_lp_settype(i, &airport_lps[0]);

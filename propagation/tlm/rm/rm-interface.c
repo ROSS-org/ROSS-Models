@@ -332,7 +332,7 @@ rm_initialize(tw_petype * ptypes, tw_lptype * types, tw_peid npe,
 	tw_pe_settype(&g_rm_pe, ptypes);
 
 	g_tw_rng_default = TW_FALSE;
-	tw_define_lps(nlp_per_pe, sizeof(rm_message), 0);
+	tw_define_lps(nlp_per_pe, sizeof(rm_message));
 
 	for(i = 0; i < g_rm_spatial_offset; i++)
 		tw_lp_settype(i, types);

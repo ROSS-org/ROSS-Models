@@ -956,7 +956,7 @@ main(int argc, char **argv)
       fflush(stdout);
     }
 
-  tw_define_lps(nlp_per_pe, sizeof(struct Msg_Data), 0);
+  tw_define_lps(nlp_per_pe, sizeof(struct Msg_Data));
 
   /*
    * Initialize App Stats Structure

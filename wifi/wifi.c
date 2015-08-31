@@ -215,7 +215,7 @@ main(int argc, char **argv, char **env)
   g_tw_events_per_pe = (mult * nlp_per_pe * g_wifi_start_events)+ optimistic_memory;
   g_tw_lookahead = lookahead;
 
-  tw_define_lps(nlp_per_pe, sizeof(wifi_message), 0);
+  tw_define_lps(nlp_per_pe, sizeof(wifi_message));
 
   tw_lp_settype(0, &mylps[0]);
 
