@@ -172,7 +172,7 @@ phold_event_handler_rc(phold_state * s, tw_bf * bf, phold_message * m, tw_lp * l
     // this gets called, we must be in an OPTIMISTIC mode anyway
     long count = m->rng_count;
     // This should be the FIRST thing to do in your reverse event handler
-    tw_snapshot_restore(lp, lp->type->state_sz, lp->pe->cur_event->delta_buddy, lp->pe->cur_event->delta_size);
+    tw_snapshot_restore(lp, lp->type->state_sz);
     while (count--) {
         tw_rand_reverse_unif(lp->rng);
     }
