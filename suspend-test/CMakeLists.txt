@@ -30,7 +30,7 @@ SET(suspend_srcs
 # You will be executing the ./suspend binary
 ADD_EXECUTABLE(suspend ${suspend_srcs})
 
-ADD_TEST(suspend_test mpirun -np 2 ./suspend --synch=3)
+ADD_TEST(suspend_test mpirun -np 2 ./suspend --synch=3 --nkp=2)
 
 TARGET_LINK_LIBRARIES(suspend ROSS m)
 ## Alternatively, use this command with RIO

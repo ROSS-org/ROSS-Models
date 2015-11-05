@@ -14,6 +14,7 @@ void receiver_init (receiver_state *s, tw_lp *lp) {
 
   // init state data
   s->count = 0;
+  s->suspend_count = 0;
   s->forward_event_count = 0;
   s->reverse_event_count = 0;
   s->net_event_count = 0;
@@ -40,6 +41,12 @@ void receiver_event (receiver_state *s, tw_bf *bf, message *in_msg, tw_lp *lp) {
     default :
       tw_error(TW_LOC, "Unhandeled message type by receiver lp");
   }
+
+    if (s->count < 0) {
+        s->suspend_count++;
+        tw_lp_suspend(lp, 1, 0);
+        return;
+    }
 }
 
 //Reverse Event Handler
@@ -69,4 +76,5 @@ void receiver_event_reverse (receiver_state *s, tw_bf *bf, message *in_msg, tw_l
 void receiver_final (receiver_state *s, tw_lp *lp){
   int self = lp->gid;
   printf("%d received %d forward and %d reverse messages: count is %d\n", self, s->forward_event_count, s->reverse_event_count, s->count);
+  printf("suspend_count: %d\n", s->suspend_count);
 }

@@ -62,7 +62,7 @@ int suspend_main (int argc, char* argv[]) {
 	//Do some error checking?
 	//Print out some settings?
 
-	g_tw_mapping = LINEAR;
+	g_tw_mapping = ROUND_ROBIN;
 
 	//Custom Mapping
 	/*

@@ -35,6 +35,7 @@ typedef struct {
 
 typedef struct {
 	int count;
+    int suspend_count;       // DON'T ROLL THIS BACK! (value is nondeterministic)
 	int forward_event_count; // DON'T ROLL THIS BACK! (value is nondeterministic)
 	int reverse_event_count; // DON'T ROLL THIS BACK! (value is nondeterministic)
 	int net_event_count;

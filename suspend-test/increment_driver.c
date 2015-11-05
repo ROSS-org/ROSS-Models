@@ -34,7 +34,7 @@ void increment_event (increment_state *s, tw_bf *bf, message *in_msg, tw_lp *lp)
   s->round_count++;
   int i;
   int dummy;
-  for (i = 0; i < INT_MAX; i++){
+  for (i = 0; i < 10000; i++){
     dummy = dummy + 7;
     dummy = dummy - 100;
     dummy = 93 + (10 * dummy);
