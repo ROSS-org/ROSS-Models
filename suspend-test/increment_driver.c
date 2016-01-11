@@ -32,6 +32,8 @@ void increment_event (increment_state *s, tw_bf *bf, message *in_msg, tw_lp *lp)
   }
 
   s->round_count++;
+  
+  // Long loop to slow down the increment LP
   int i;
   int dummy;
   for (i = 0; i < 10000; i++){
