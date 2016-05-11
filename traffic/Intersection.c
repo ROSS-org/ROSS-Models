@@ -170,6 +170,7 @@ tw_lptype mylps[] = {
             (pre_run_f) NULL,
 			(event_f) Intersection_EventHandler,
 			(revent_f) Intersection_RC_EventHandler,
+			(commit_f) NULL,
 			(final_f) Intersection_Statistics_CollectStats,
 			(map_f) CellMapping_lp_to_pe,
 			sizeof(Intersection_State)

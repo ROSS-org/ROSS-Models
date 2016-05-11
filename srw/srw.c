@@ -252,6 +252,7 @@ tw_lptype srw_lps[] = {
     (pre_run_f) NULL,
     (event_f)  srw_event,
     (revent_f) srw_revent,
+    (commit_f) NULL,
     (final_f)  srw_final,
     (map_f)    srw_map,
     sizeof    (srw_state)
@@ -265,6 +266,7 @@ tw_lptype netdmf_srw_lps[] = {
     (pre_run_f) NULL,
     (event_f)  netdmf_srw_event,
     (revent_f) netdmf_srw_revent,
+    (commit_f) NULL,
     (final_f)  netdmf_srw_final,
     (map_f)    netdmf_srw_map,
     sizeof    (srw_state)

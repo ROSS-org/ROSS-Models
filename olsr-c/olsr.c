@@ -35,6 +35,7 @@ tw_lptype mylps[] =
         (pre_run_f) NULL,
         (event_f) olsr_region_event_handler,
         (revent_f) olsr_region_event_handler_rc,
+        (commit_f) NULL,
         (final_f) olsr_region_finish,
         (map_f) olsr_map,
     	sizeof(olsr_region_state)},

@@ -13,6 +13,7 @@ tw_lptype suspend_lps[] = {
     (pre_run_f) NULL,
     (event_f) increment_event,
     (revent_f) increment_event_reverse,
+    (commit_f) NULL,
     (final_f) increment_final,
     (map_f) suspend_map,
     sizeof(increment_state)
@@ -22,6 +23,7 @@ tw_lptype suspend_lps[] = {
     (pre_run_f) NULL,
     (event_f) decrement_event,
     (revent_f) decrement_event_reverse,
+    (commit_f) NULL,
     (final_f) decrement_final,
     (map_f) suspend_map,
     sizeof(decrement_state)
@@ -31,6 +33,7 @@ tw_lptype suspend_lps[] = {
     (pre_run_f) NULL,
     (event_f) receiver_event,
     (revent_f) receiver_event_reverse,
+    (commit_f) NULL,
     (final_f) receiver_final,
     (map_f) suspend_map,
     sizeof(receiver_state)

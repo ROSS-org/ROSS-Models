@@ -27,6 +27,7 @@ tw_lptype mylps[] =
         (pre_run_f) NULL,
         (event_f) raid_io_eventhandler,
         (revent_f) raid_io_eventhandler_rc,
+        (commit_f) NULL,
         (final_f) raid_io_finish,
         (map_f) raid_mapping,
         sizeof( IOState )
@@ -37,6 +38,7 @@ tw_lptype mylps[] =
         (pre_run_f) NULL,
         (event_f) raid_server_eventhandler,
         (revent_f) raid_server_eventhandler_rc,
+        (commit_f) NULL,
         (final_f) raid_server_finish,
         (map_f) raid_mapping,
         sizeof( ServerState )
@@ -47,6 +49,7 @@ tw_lptype mylps[] =
         (pre_run_f) NULL,
         (event_f) raid_controller_eventhandler,
         (revent_f) raid_controller_eventhandler_rc,
+        (commit_f) NULL,
         (final_f) raid_controller_finish,
         (map_f) raid_mapping,
         sizeof( ContState )
@@ -57,6 +60,7 @@ tw_lptype mylps[] =
         (pre_run_f) NULL,
         (event_f) raid_disk_eventhandler,
         (revent_f) raid_disk_eventhandler_rc,
+        (commit_f) NULL,
         (final_f) raid_disk_finish,
         (map_f) raid_mapping,
         sizeof( DiskState )

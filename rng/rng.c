@@ -43,6 +43,7 @@ tw_lptype rng_lps[] = {
         (pre_run_f) NULL,
         (event_f) rngt_event,
         (revent_f) 0, // model_event_reverse,
+        (commit_f) NULL,
         (final_f) rngt_final,
         (map_f) rngt_map,
         sizeof(state)

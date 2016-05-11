@@ -20,6 +20,7 @@ tw_lptype mylps[] =
         (pre_run_f) NULL,
         (event_f) wifi_access_point_event_handler,
         (revent_f) wifi_access_point_event_handler_rc,
+        (commit_f) NULL,
         (final_f) wifi_access_point_finish,
         (map_f) wifi_map,
     	sizeof(wifi_access_point_state)},

@@ -471,7 +471,7 @@ packet_send( nodes_state * s,
     if( msg->next_stop == -1 )
      {
 	 /* no destination has been set */
-	 dimension_order_routing( s, &dst_lp, &tmp_dim, &tmp_dir );
+ 	 dimension_order_routing( s, &dst_lp, &tmp_dim, &tmp_dir );
      }
     else
       {
@@ -738,7 +738,7 @@ void mpi_msg_send(mpi_process * p,
 	        m->dest_lp = getProcID( final_dst );
 	 	}
 
-	     m->next_stop = -1;
+ 	     m->next_stop = -1;
              tw_event_send( e );
      }
      ts = 0.1 + tw_rand_exponential( lp->rng, MEAN_INTERVAL);
@@ -899,7 +899,7 @@ void node_rc_handler(nodes_state * s, tw_bf * bf, nodes_message * msg, tw_lp * l
 		   {
 		     int i;
 		     for(i=0; i < num_chunks; i++)
-		        tw_rand_reverse_unif(lp->rng);
+  		        tw_rand_reverse_unif(lp->rng);
 		   }
 	break;
 
@@ -1013,6 +1013,7 @@ tw_lptype nodes_lps[] =
         (pre_run_f) NULL,
 		(event_f) event_handler,
 		(revent_f) node_rc_handler,
+    (commit_f) NULL,
 		(final_f) final,
 		(map_f) mapping,
 		sizeof(nodes_state),
@@ -1022,6 +1023,7 @@ tw_lptype nodes_lps[] =
            (pre_run_f) NULL,
 	       (event_f) mpi_event_handler,
 	       (revent_f) mpi_event_rc_handler,
+         (commit_f) NULL,
 	       (final_f) final,
 	       (map_f) mapping,
 	       sizeof(mpi_process),

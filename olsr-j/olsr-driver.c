@@ -2041,6 +2041,7 @@ tw_lptype olsr_lps[] = {
         (pre_run_f) NULL,
         (event_f) olsr_event,
         (revent_f) olsr_event_reverse,
+        (commit_f) NULL,
         (final_f) olsr_final,
         (map_f) olsr_map,
         sizeof(node_state)
@@ -2051,6 +2052,7 @@ tw_lptype olsr_lps[] = {
         (pre_run_f) NULL,
         (event_f) sa_master_event,
         (revent_f) sa_master_event_reverse,
+        (commit_f) NULL,
         (final_f) null,
         (map_f) olsr_map,
         sizeof(node_state)

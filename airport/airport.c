@@ -163,6 +163,7 @@ tw_lptype airport_lps[] =
         (pre_run_f) NULL,
 		(event_f) event_handler,
 		(revent_f) rc_event_handler,
+		(commit_f) NULL,
 		(final_f) final,
 		(map_f) mapping,
 		sizeof(airport_state),

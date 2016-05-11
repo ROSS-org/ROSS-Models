@@ -189,6 +189,7 @@ tw_lptype       mylps[] = {
      (pre_run_f) NULL,
 	 (event_f) phold_event_handler,
 	 (revent_f) phold_event_handler_rc,
+	 (commit_f) NULL,
 	 (final_f) phold_finish,
 	 (map_f) phold_map,
 	sizeof(phold_state)},

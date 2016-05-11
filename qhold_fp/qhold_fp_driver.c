@@ -223,6 +223,7 @@ tw_lptype qhold_lps[] = {
         (pre_run_f) NULL,
         (event_f) qhold_event,
         (revent_f) qhold_event_reverse,
+        (commit_f) NULL,
         (final_f) qhold_final,
         (map_f) qhold_map,
         sizeof(q_state)

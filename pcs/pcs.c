@@ -856,6 +856,7 @@ tw_lptype       mylps[] =
       (pre_run_f) NULL,
       (event_f) Cell_EventHandler,
       (revent_f) RC_Cell_EventHandler,
+      (commit_f) NULL,
       (final_f) CellStatistics_CollectStats,
       (map_f) CellMapping_lp_to_pe,
       sizeof(struct State)
