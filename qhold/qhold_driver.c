@@ -34,7 +34,7 @@ void qhold_init(q_state *s, tw_lp *lp)
 {
     unsigned i;
     //unsigned long int seed = 0;
-    
+
     /* initialize all of the PHOLD parameters */
 	// initialize self;
     s->lastvtime = 0;
@@ -44,40 +44,40 @@ void qhold_init(q_state *s, tw_lp *lp)
     // population is set by command-line parameters
 	// population = popSize;
 	// lookahead = lookAheadDelay;
-    
+
 	/* Seed initialization done mod 2**64, i.e. overflows ignored */
 	// seed = ((unsigned long int)0xA174652BC0F983DE)) XOR (((unsigned long int)( lp->gid + 1000001 ))**10) xor randomSeedVariation;
     // initialize stateValue = randomUnsignedLongInt(seed);
     s->stateValue = tw_rand_ulong(lp->rng, 0, ULONG_MAX-1);
     globalHash += s->stateValue;
-    
+
 	/* create initial population of events, randomly distributed among the LPs */
-    
+
 	for (i = 0; i < population; i++) {
         tw_stime ts;
         tw_lpid dest;
         q_message *newData;
         tw_event *newEvent;
         unsigned nextEventDelay;
-        
+
 		/* Calculate next event time */
 		nextEventDelay = tw_rand_ulong(lp->rng, 0, UINT_MAX-1);  	// 32-bit
-        
+
 		/* Calculate next event destination */
 		//dest = randomUnsignedLongInt(seed) mod nLPs; 		// 64-bit; send to all destinations uniformly
         dest = lp->gid;
-        
+
 		/* Schedule initial event with lookAhead */
         ts = nextEventDelay + g_tw_lookahead;
-        
+
         newEvent = tw_event_new(dest, ts, lp);
         newData = tw_event_data(newEvent);
         newData->msgValue = s->stateValue;
-        
+
         tw_event_send(newEvent);
         globalEventsScheduled++;
 		//scheduleEvent(time + lookAhead + nextEventDelay, dest, stateValue); //; must be no overflow in the calculation of time
-		
+
 	}
 }
 
@@ -90,20 +90,20 @@ void qhold_event(q_state *s, tw_bf *bf, q_message *msg, tw_lp *lp)
     tw_event *newEvent;
     unsigned nextEventDelay;
     unsigned long int random;
-    
+
     // Zero out all of our bitfields and counters
     *(unsigned *)bf = 0;
     msg->RC.oldStateValue = 0;
     msg->RC.rngLoopCount = 0;
     msg->RC.lastvtime = 0;
-    
+
     globalEvents++;
-    
+
     if (tw_now(lp) == s->lastvtime) {
         bf->c0 = 1;
         globalTies++;
     }
-    
+
     // 1 rng
     random = tw_rand_ulong(lp->rng, 0, ULONG_MAX-1);
     //printf("random is %lu\n", random);
@@ -112,7 +112,7 @@ void qhold_event(q_state *s, tw_bf *bf, q_message *msg, tw_lp *lp)
     s->stateValue = (s->stateValue + msg->msgValue) ^ random;
     //printf("s->stateValue is %lu\n", s->stateValue);
     globalHash += s->stateValue;
-    
+
     /* Calculate next event time */
     // 2 rng
 	nextEventDelay = tw_rand_ulong(lp->rng, 0, UINT_MAX-1);  // 32-bit
@@ -121,7 +121,7 @@ void qhold_event(q_state *s, tw_bf *bf, q_message *msg, tw_lp *lp)
         // if much more or less often that 1 in 2**32, we have a bad RNG
         globalZeroDelays++;
     }
-        
+
     /* Calculate next event destination */
     // 3 rng
 	if ( tw_rand_ulong(lp->rng, 0, ULONG_MAX-1) < remoteThreshold ) {
@@ -144,16 +144,16 @@ void qhold_event(q_state *s, tw_bf *bf, q_message *msg, tw_lp *lp)
         // Send to ourselves instead
         dest = lp->gid;
     }
-    
+
     ts = nextEventDelay + g_tw_lookahead;
-    
+
     newEvent = tw_event_new(dest, ts, lp);
     newData = tw_event_data(newEvent);
     newData->msgValue = s->stateValue;
-    
+
     tw_event_send(newEvent);
     globalEventsScheduled++;
-    
+
     msg->RC.lastvtime = s->lastvtime;
     s->lastvtime = tw_now(lp);
 }
@@ -162,11 +162,11 @@ void qhold_event(q_state *s, tw_bf *bf, q_message *msg, tw_lp *lp)
 void qhold_event_reverse(q_state *s, tw_bf *bf, q_message *msg, tw_lp *lp)
 {
     unsigned i;
-    
+
     s->lastvtime = msg->RC.lastvtime;
-    
+
     globalEventsScheduled--;
-    
+
     if (bf->c2) {
         // We have at least one RNG call
         for (i = 0; i < msg->RC.rngLoopCount; i++) {
@@ -174,27 +174,27 @@ void qhold_event_reverse(q_state *s, tw_bf *bf, q_message *msg, tw_lp *lp)
             tw_rand_reverse_unif(lp->rng);
         }
     }
-    
+
     // 3
     tw_rand_reverse_unif(lp->rng);
-    
+
     if (bf->c1) {
         globalZeroDelays--;
     }
-    
+
     // 2
     tw_rand_reverse_unif(lp->rng);
-    
+
     globalHash -= s->stateValue;
     s->stateValue = msg->RC.oldStateValue;
-    
+
     // 1
     tw_rand_reverse_unif(lp->rng);
-    
+
     if (bf->c0) {
         globalTies--;
     }
-    
+
     globalEvents--;
 }
 

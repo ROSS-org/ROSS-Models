@@ -11,9 +11,9 @@ typedef struct {
 void rngt_init(state *s, tw_lp *lp)
 {
     tw_event *e;
-    
+
     e = tw_event_new(lp->gid, 1.0, lp);
-    
+
     tw_event_send(e);
 }
 
@@ -21,7 +21,7 @@ void rngt_event(state *s, tw_bf *bf, message *m, tw_lp *lp)
 {
     int i;
     double temp;
-    
+
     for (i = 0; i < 100; i++) {
         temp = tw_rand_unif(lp->rng);
         fprintf(rng_event_log, "%lf \n", temp);
@@ -55,7 +55,7 @@ tw_lptype rng_lps[] = {
 int rng_main(int argc, char *argv[])
 {
     int i;
-    
+
     int32_t local_seed[] = { 5555, 6666, 7777, 8888 };
     // Do this *BEFORE* tw_init() is called
     g_tw_rng_seed = local_seed;
@@ -66,18 +66,18 @@ int rng_main(int argc, char *argv[])
     }
 
     tw_init(&argc, &argv);
-    
+
     tw_define_lps(1, sizeof(message));
-    
+
     for (i = 0; i < g_tw_nlp; i++) {
         tw_lp_settype(i, &rng_lps[0]);
     }
-    
+
     tw_run();
-    
+
     tw_end();
-    
+
     fclose(rng_event_log);
-    
+
     return 0;
 }

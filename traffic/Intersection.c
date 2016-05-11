@@ -7,12 +7,12 @@
 #define NUM_CELLS_X 1024	//32     //256
 #define NUM_CELLS_Y 1024	//32     //256
 
-#define NUM_VP_X 32 	//8 					
-#define NUM_VP_Y 32     //8 
+#define NUM_VP_X 32 	//8
+#define NUM_VP_Y 32     //8
 
 enum events { ARIVAL, DEPARTURE, DIRECTION_SELECT };
 
-enum abs_directions { WEST_LEFT = 0, WEST_STRAIGHT, WEST_RIGHT, EAST_LEFT, EAST_STRAIGHT, EAST_RIGHT, NORTH_LEFT, NORTH_STRAIGHT, NORTH_RIGHT, SOUTH_LEFT, SOUTH_STRAIGHT, SOUTH_RIGHT }; 
+enum abs_directions { WEST_LEFT = 0, WEST_STRAIGHT, WEST_RIGHT, EAST_LEFT, EAST_STRAIGHT, EAST_RIGHT, NORTH_LEFT, NORTH_STRAIGHT, NORTH_RIGHT, SOUTH_LEFT, SOUTH_STRAIGHT, SOUTH_RIGHT };
 enum ariv_dept {IN, OUT};
 
 typedef struct {
@@ -113,18 +113,18 @@ tw_lpid Cell_ComputeMove( tw_lpid lpid, int direction )
 }
 
 tw_peid
-	CellMapping_lp_to_pe(tw_lpid lpid) 
+	CellMapping_lp_to_pe(tw_lpid lpid)
 {
 	long lp_x = lpid % NUM_CELLS_X;
 	long lp_y = lpid / NUM_CELLS_X;
 	long vp_num_x = lp_x/g_cells_per_vp_x;
 	long vp_num_y = lp_y/g_cells_per_vp_y;
-	long vp_num = vp_num_x + (vp_num_y*NUM_VP_X);  
-	tw_peid peid = vp_num/g_vp_per_proc;  
+	long vp_num = vp_num_x + (vp_num_y*NUM_VP_X);
+	tw_peid peid = vp_num/g_vp_per_proc;
 	return peid;
 }
 
-tw_lp *CellMapping_to_lp(tw_lpid lpid) 
+tw_lp *CellMapping_to_lp(tw_lpid lpid)
 {
 	tw_lpid lp_x = lpid % NUM_CELLS_X; //lpid -> (lp_x,lp_y)
 	tw_lpid lp_y = lpid / NUM_CELLS_X;
@@ -133,11 +133,11 @@ tw_lp *CellMapping_to_lp(tw_lpid lpid)
 	tw_lpid vp_index = vp_index_x + (vp_index_y * (g_cells_per_vp_x));
 	tw_lpid vp_num_x = lp_x/g_cells_per_vp_x;
 	tw_lpid vp_num_y = lp_y/g_cells_per_vp_y;
-	tw_lpid vp_num = vp_num_x + (vp_num_y*NUM_VP_X);  
+	tw_lpid vp_num = vp_num_x + (vp_num_y*NUM_VP_X);
 	vp_num = vp_num % g_vp_per_proc;
 	tw_lpid index = vp_index + vp_num*g_cells_per_vp;
 
-#ifdef ROSS_runtime_check  
+#ifdef ROSS_runtime_check
 	if( index >= g_tw_nlp )
 		tw_error(TW_LOC, "index (%llu) beyond g_tw_nlp (%llu) range \n", index, g_tw_nlp);
 #endif /* ROSS_runtime_check */
@@ -145,7 +145,7 @@ tw_lp *CellMapping_to_lp(tw_lpid lpid)
 	return g_tw_lp[index];
 }
 
-tw_lpid CellMapping_to_local_index(tw_lpid lpid) 
+tw_lpid CellMapping_to_local_index(tw_lpid lpid)
 {
 	tw_lpid lp_x = lpid % NUM_CELLS_X; //lpid -> (lp_x,lp_y)
 	tw_lpid lp_y = lpid / NUM_CELLS_X;
@@ -154,7 +154,7 @@ tw_lpid CellMapping_to_local_index(tw_lpid lpid)
 	tw_lpid vp_index = vp_index_x + (vp_index_y * (g_cells_per_vp_x));
 	tw_lpid vp_num_x = lp_x/g_cells_per_vp_x;
 	tw_lpid vp_num_y = lp_y/g_cells_per_vp_y;
-	tw_lpid vp_num = vp_num_x + (vp_num_y*NUM_VP_X);  
+	tw_lpid vp_num = vp_num_x + (vp_num_y*NUM_VP_X);
 	vp_num = vp_num % g_vp_per_proc;
 	tw_lpid index = vp_index + vp_num*g_cells_per_vp;
 
@@ -237,7 +237,7 @@ void traffic_grid_mapping()
 	}
 }
 
-int main(int argc, char * argv[]) 
+int main(int argc, char * argv[])
 {
 	g_tw_ts_end = 30;
 	g_tw_gvt_interval = 16;
@@ -264,7 +264,7 @@ int main(int argc, char * argv[])
 	g_tw_lookahead = lookahead;
 
 	nlp_per_pe = (NUM_CELLS_X * NUM_CELLS_Y) / (tw_nnodes() * g_tw_npe);
-	g_tw_events_per_pe = (mult * nlp_per_pe * g_traffic_start_events) + 
+	g_tw_events_per_pe = (mult * nlp_per_pe * g_traffic_start_events) +
 		optimistic_memory;
 	num_cells_per_kp = (NUM_CELLS_X * NUM_CELLS_Y) / (NUM_VP_X * NUM_VP_Y);
 	vp_per_proc = (NUM_VP_X * NUM_VP_Y) / ((tw_nnodes() * g_tw_npe)) ;
@@ -338,7 +338,7 @@ void  Intersection_StartUp(Intersection_State *SV, tw_lp * lp) {
 	SV->num_out_east_straight = 0;
 	SV->num_out_east_right = 0;
 
-	for(i = 0; i < g_traffic_start_events; i++) 
+	for(i = 0; i < g_traffic_start_events; i++)
 	{
 		ts = tw_rand_exponential(lp->rng, MEAN_SERVICE );
 		CurEvent = tw_event_new(lp->gid, ts, lp);
@@ -353,7 +353,7 @@ void  Intersection_StartUp(Intersection_State *SV, tw_lp * lp) {
 	}
 }
 
-void Intersection_EventHandler(Intersection_State *SV, tw_bf *CV, Msg_Data *M, tw_lp *lp) 
+void Intersection_EventHandler(Intersection_State *SV, tw_bf *CV, Msg_Data *M, tw_lp *lp)
 {
 	tw_stime ts=0.0;
 	int new_event_direction=0;
@@ -364,7 +364,7 @@ void Intersection_EventHandler(Intersection_State *SV, tw_bf *CV, Msg_Data *M, t
 
 	switch(M->event_type) {
 
-	case ARIVAL: 
+	case ARIVAL:
 
 		if(M->car.x_to_go == 0 && M->car.y_to_go == 0){
 			SV->total_cars_finished++;
@@ -377,49 +377,49 @@ void Intersection_EventHandler(Intersection_State *SV, tw_bf *CV, Msg_Data *M, t
 		switch(M->car.current_lane){
 
 		case WEST_LEFT:
-			SV->num_in_east_left++;	
+			SV->num_in_east_left++;
 			M->car.current_lane = EAST_LEFT;
 			break;
 		case WEST_STRAIGHT:
-			SV->num_in_east_straight++;	
+			SV->num_in_east_straight++;
 			M->car.current_lane = EAST_STRAIGHT;
 			break;
-		case WEST_RIGHT: 
+		case WEST_RIGHT:
 			SV->num_in_east_right++;
 			M->car.current_lane = EAST_RIGHT;
 			break;
-		case EAST_LEFT: 
+		case EAST_LEFT:
 			SV->num_in_west_left++;
 			M->car.current_lane = WEST_LEFT;
 			break;
-		case EAST_STRAIGHT: 
+		case EAST_STRAIGHT:
 			SV->num_in_west_straight++;
 			M->car.current_lane = WEST_STRAIGHT;
 			break;
-		case EAST_RIGHT: 
+		case EAST_RIGHT:
 			SV->num_in_west_right++;
 			M->car.current_lane = WEST_RIGHT;
 			break;
-		case NORTH_LEFT: 
+		case NORTH_LEFT:
 			SV->num_in_south_left++;
 			M->car.current_lane = SOUTH_LEFT;
 			break;
-		case NORTH_STRAIGHT: 
+		case NORTH_STRAIGHT:
 			SV->num_in_south_straight++;
 			M->car.current_lane = SOUTH_STRAIGHT;
 			break;
-		case NORTH_RIGHT: 
+		case NORTH_RIGHT:
 			SV->num_in_south_right++;
 			M->car.current_lane = SOUTH_RIGHT;
 			break;
 		case SOUTH_LEFT:
 			SV->num_in_north_left++;
-			M->car.current_lane = NORTH_LEFT;	
-			break; 
+			M->car.current_lane = NORTH_LEFT;
+			break;
 		case SOUTH_STRAIGHT:
 			SV->num_in_north_straight++;
 			M->car.current_lane = NORTH_STRAIGHT;
-			break; 
+			break;
 		case SOUTH_RIGHT:
 			SV->num_in_north_right++;
 			M->car.current_lane = NORTH_RIGHT;
@@ -444,7 +444,7 @@ void Intersection_EventHandler(Intersection_State *SV, tw_bf *CV, Msg_Data *M, t
 
 		break;
 
-	case DEPARTURE: 
+	case DEPARTURE:
 
 		switch(M->car.current_lane){
 		case WEST_LEFT:
@@ -455,7 +455,7 @@ void Intersection_EventHandler(Intersection_State *SV, tw_bf *CV, Msg_Data *M, t
 			SV->num_out_west_straight--;
 			new_event_direction = 0;
 			break;
-		case WEST_RIGHT: 
+		case WEST_RIGHT:
 			SV->num_out_west_right--;
 			new_event_direction = 0;
 			break;
@@ -463,11 +463,11 @@ void Intersection_EventHandler(Intersection_State *SV, tw_bf *CV, Msg_Data *M, t
 			SV->num_out_east_left--;
 			new_event_direction = 1;
 			break;
-		case EAST_STRAIGHT: 
+		case EAST_STRAIGHT:
 			SV->num_out_east_straight--;
 			new_event_direction = 1;
 			break;
-		case EAST_RIGHT: 
+		case EAST_RIGHT:
 			SV->num_out_east_right--;
 			new_event_direction = 1;
 			break;
@@ -595,7 +595,7 @@ void Intersection_EventHandler(Intersection_State *SV, tw_bf *CV, Msg_Data *M, t
 			}
 
 			break;
-		case EAST_RIGHT: 
+		case EAST_RIGHT:
 			SV->num_in_east_right--;
 			if(M->car.y_to_go > 0 && SV->num_out_north_straight < MAX_CARS_ON_ROAD){
 				M->car.current_lane = NORTH_STRAIGHT;
@@ -661,7 +661,7 @@ void Intersection_EventHandler(Intersection_State *SV, tw_bf *CV, Msg_Data *M, t
 				}
 				else if(M->car.arrived_from == WEST_STRAIGHT){
 					M->car.current_lane = WEST_STRAIGHT;
-					SV->num_out_west_straight++;							
+					SV->num_out_west_straight++;
 					M->car.sent_back++;
 				}
 				else if(M->car.arrived_from == NORTH_LEFT){
@@ -671,7 +671,7 @@ void Intersection_EventHandler(Intersection_State *SV, tw_bf *CV, Msg_Data *M, t
 				}
 			}
 			break;
-		case WEST_STRAIGHT: 
+		case WEST_STRAIGHT:
 			SV->num_in_west_straight--;
 			if(M->car.x_to_go > 0 && SV->num_out_east_straight < MAX_CARS_ON_ROAD){
 				M->car.current_lane = EAST_STRAIGHT;
@@ -709,7 +709,7 @@ void Intersection_EventHandler(Intersection_State *SV, tw_bf *CV, Msg_Data *M, t
 				}
 			}
 			break;
-		case WEST_RIGHT: 
+		case WEST_RIGHT:
 			SV->num_in_west_right--;
 			if(M->car.y_to_go < 0 && SV->num_out_south_straight < MAX_CARS_ON_ROAD){
 				M->car.current_lane = SOUTH_STRAIGHT;
@@ -747,7 +747,7 @@ void Intersection_EventHandler(Intersection_State *SV, tw_bf *CV, Msg_Data *M, t
 				}
 			}
 			break;
-		case NORTH_LEFT: 
+		case NORTH_LEFT:
 			SV->num_in_north_left--;
 			if(M->car.x_to_go > 0 && SV->num_out_east_straight < MAX_CARS_ON_ROAD){
 				M->car.current_lane = EAST_STRAIGHT;
@@ -824,7 +824,7 @@ void Intersection_EventHandler(Intersection_State *SV, tw_bf *CV, Msg_Data *M, t
 				}
 			}
 			break;
-		case NORTH_RIGHT: 
+		case NORTH_RIGHT:
 			SV->num_in_north_right--;
 			if(M->car.x_to_go < 0 && SV->num_out_west_straight < MAX_CARS_ON_ROAD){
 				M->car.current_lane = WEST_STRAIGHT;
@@ -900,7 +900,7 @@ void Intersection_EventHandler(Intersection_State *SV, tw_bf *CV, Msg_Data *M, t
 				}
 			}
 
-			break; 
+			break;
 		case SOUTH_STRAIGHT:
 			SV->num_in_south_straight--;
 			if(M->car.y_to_go > 0 && SV->num_out_north_straight < MAX_CARS_ON_ROAD){
@@ -938,7 +938,7 @@ void Intersection_EventHandler(Intersection_State *SV, tw_bf *CV, Msg_Data *M, t
 					M->car.sent_back++;
 				}
 			}
-			break; 
+			break;
 		case SOUTH_RIGHT:
 			SV->num_in_south_right--;
 			if(M->car.x_to_go > 0 && SV->num_out_east_straight < MAX_CARS_ON_ROAD){
@@ -998,16 +998,16 @@ void Intersection_EventHandler(Intersection_State *SV, tw_bf *CV, Msg_Data *M, t
 }
 
 
-void Intersection_RC_EventHandler(Intersection_State *SV, tw_bf *CV, Msg_Data *M, tw_lp *lp) 
+void Intersection_RC_EventHandler(Intersection_State *SV, tw_bf *CV, Msg_Data *M, tw_lp *lp)
 {
 
 	enum abs_directions temp_direction;
 	*(int *)CV = (int)0;
 
-	switch(M->event_type) 
+	switch(M->event_type)
 	{
 
-	case ARIVAL: 
+	case ARIVAL:
 
 		if(M->car.x_to_go == 0 && M->car.y_to_go == 0)
 		{
@@ -1021,38 +1021,38 @@ void Intersection_RC_EventHandler(Intersection_State *SV, tw_bf *CV, Msg_Data *M
 		switch(M->car.current_lane)
 		{
 		case WEST_LEFT:
-			SV->num_in_east_left--;	
+			SV->num_in_east_left--;
 			break;
 		case WEST_STRAIGHT:
-			SV->num_in_east_straight--;	
+			SV->num_in_east_straight--;
 			break;
-		case WEST_RIGHT: 
+		case WEST_RIGHT:
 			SV->num_in_east_right++;
 			break;
-		case EAST_LEFT: 
+		case EAST_LEFT:
 			SV->num_in_west_left++;
 			break;
-		case EAST_STRAIGHT: 
+		case EAST_STRAIGHT:
 			SV->num_in_west_straight++;
 			break;
-		case EAST_RIGHT: 
+		case EAST_RIGHT:
 			SV->num_in_west_right++;
 			break;
-		case NORTH_LEFT: 
+		case NORTH_LEFT:
 			SV->num_in_south_left++;
 			break;
-		case NORTH_STRAIGHT: 
+		case NORTH_STRAIGHT:
 			SV->num_in_south_straight++;
 			break;
-		case NORTH_RIGHT: 
+		case NORTH_RIGHT:
 			SV->num_in_south_right++;
 			break;
 		case SOUTH_LEFT:
 			SV->num_in_north_left++;
-			break; 
+			break;
 		case SOUTH_STRAIGHT:
 			SV->num_in_north_straight++;
-			break; 
+			break;
 		case SOUTH_RIGHT:
 			SV->num_in_north_right++;
 			break;
@@ -1062,7 +1062,7 @@ void Intersection_RC_EventHandler(Intersection_State *SV, tw_bf *CV, Msg_Data *M
 		tw_rand_reverse_unif( lp->rng );
 		break;
 
-	case DEPARTURE: 
+	case DEPARTURE:
 
 		switch(M->car.current_lane){
 		case WEST_LEFT:
@@ -1071,16 +1071,16 @@ void Intersection_RC_EventHandler(Intersection_State *SV, tw_bf *CV, Msg_Data *M
 		case WEST_STRAIGHT:
 			SV->num_out_west_straight++;
 			break;
-		case WEST_RIGHT: 
+		case WEST_RIGHT:
 			SV->num_out_west_right++;
 			break;
 		case EAST_LEFT:
 			SV->num_out_east_left++;
 			break;
-		case EAST_STRAIGHT: 
+		case EAST_STRAIGHT:
 			SV->num_out_east_straight++;
 			break;
-		case EAST_RIGHT: 
+		case EAST_RIGHT:
 			SV->num_out_east_right++;
 			break;
 		case NORTH_LEFT:
@@ -1160,7 +1160,7 @@ void Intersection_RC_EventHandler(Intersection_State *SV, tw_bf *CV, Msg_Data *M
 			}
 
 			break;
-		case EAST_RIGHT: 
+		case EAST_RIGHT:
 			SV->num_in_east_right++;
 			if(M->car.y_to_go > 0 && SV->num_out_north_straight < MAX_CARS_ON_ROAD){
 				SV->num_out_north_straight --;
@@ -1199,14 +1199,14 @@ void Intersection_RC_EventHandler(Intersection_State *SV, tw_bf *CV, Msg_Data *M
 					SV->num_out_west_left--;
 				}
 				else if(M->car.arrived_from == WEST_STRAIGHT){
-					SV->num_out_west_straight--;							
+					SV->num_out_west_straight--;
 				}
 				else if(M->car.arrived_from == NORTH_LEFT){
 					SV->num_out_west_right--;
 				}
 			}
 			break;
-		case WEST_STRAIGHT: 
+		case WEST_STRAIGHT:
 			SV->num_in_west_straight++;
 			if(M->car.x_to_go > 0 && SV->num_out_east_straight < MAX_CARS_ON_ROAD){
 				SV->num_out_east_straight --;
@@ -1229,7 +1229,7 @@ void Intersection_RC_EventHandler(Intersection_State *SV, tw_bf *CV, Msg_Data *M
 				}
 			}
 			break;
-		case WEST_RIGHT: 
+		case WEST_RIGHT:
 			SV->num_in_west_right++;
 			if(M->car.y_to_go < 0 && SV->num_out_south_straight < MAX_CARS_ON_ROAD){
 				SV->num_out_south_straight --;
@@ -1252,7 +1252,7 @@ void Intersection_RC_EventHandler(Intersection_State *SV, tw_bf *CV, Msg_Data *M
 				}
 			}
 			break;
-		case NORTH_LEFT: 
+		case NORTH_LEFT:
 			SV->num_in_north_left++;
 			if(M->car.x_to_go > 0 && SV->num_out_east_straight < MAX_CARS_ON_ROAD){
 				SV->num_out_east_straight --;
@@ -1298,7 +1298,7 @@ void Intersection_RC_EventHandler(Intersection_State *SV, tw_bf *CV, Msg_Data *M
 				}
 			}
 			break;
-		case NORTH_RIGHT: 
+		case NORTH_RIGHT:
 			SV->num_in_north_right++;
 			if(M->car.x_to_go < 0 && SV->num_out_west_straight < MAX_CARS_ON_ROAD){
 				SV->num_out_west_straight --;
@@ -1344,7 +1344,7 @@ void Intersection_RC_EventHandler(Intersection_State *SV, tw_bf *CV, Msg_Data *M
 				}
 			}
 
-			break; 
+			break;
 		case SOUTH_STRAIGHT:
 			SV->num_in_south_straight++;
 			if(M->car.y_to_go > 0 && SV->num_out_north_straight < MAX_CARS_ON_ROAD){
@@ -1367,7 +1367,7 @@ void Intersection_RC_EventHandler(Intersection_State *SV, tw_bf *CV, Msg_Data *M
 					SV->num_out_south_right--;
 				}
 			}
-			break; 
+			break;
 		case SOUTH_RIGHT:
 			SV->num_in_south_right++;
 			if(M->car.x_to_go > 0 && SV->num_out_east_straight < MAX_CARS_ON_ROAD){

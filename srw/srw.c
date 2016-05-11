@@ -112,7 +112,7 @@ void srw_event(srw_state *s, tw_bf *bf, srw_msg_data *m, tw_lp *lp)
 
   switch(m->type) {
   case GPS:
-    
+
     // Schedule next event
     e = tw_event_new(lp->gid, SRW_GPS_RATE, lp);
     msg = tw_event_data(e);
@@ -193,7 +193,7 @@ static int top_node = 0;
 static int top_move = 0;
 
 /**
- * Final function for SRW.  
+ * Final function for SRW.
  */
 void srw_final(srw_state *s, tw_lp *lp)
 {
@@ -215,7 +215,7 @@ void srw_final(srw_state *s, tw_lp *lp)
 }
 
 /**
- * Final function for SRW.  
+ * Final function for SRW.
  */
 void netdmf_srw_final(srw_state *s, tw_lp *lp)
 {

@@ -54,24 +54,24 @@ main(int argc, char **argv)
 
   if( lookahead > 1.0 )
     tw_error(TW_LOC, "Lookahead > 1.0 .. needs to be less\n");
-  
+
   //reset mean based on lookahead
   mean = mean - lookahead;
 
   g_tw_memory_nqueues = 16; // give at least 16 memory queue event
-  
+
   offset_lpid = g_tw_mynode * nlp_per_pe;
   ttl_lps = tw_nnodes() * g_tw_npe * nlp_per_pe;
-  g_tw_events_per_pe = (mult * nlp_per_pe * g_phold_start_events) + 
+  g_tw_events_per_pe = (mult * nlp_per_pe * g_phold_start_events) +
     optimistic_memory;
   //g_tw_rng_default = TW_FALSE;
   g_tw_lookahead = lookahead;
-  
+
   tw_define_lps(nlp_per_pe, sizeof(tcp_phold_message));
-  
+
     for(i = 0; i < g_tw_nlp; i++)
         tw_lp_settype(i, &mylps[0]);
-  
+
   if( g_tw_mynode == 0 )
     {
       printf("Running simulation with following configuration: \n" );
@@ -85,12 +85,12 @@ main(int argc, char **argv)
       printf("\n\n");
     }
 
-  TWAppStats.sent_packets = 0; 
-  TWAppStats.received_packets = 0; 
+  TWAppStats.sent_packets = 0;
+  TWAppStats.received_packets = 0;
   TWAppStats.dropped_packets = 0;
   TWAppStats.timedout_packets = 0;
   TWAppStats.throughput = 0;
- 
+
   tw_run();
   tw_end();
   tcp_finalize( &TWAppStats );
@@ -111,7 +111,7 @@ tcp_finalize()
 //                  g_tw_masternode,
 //                  MPI_COMM_WORLD) != MPI_SUCCESS)
 //        tw_error(TW_LOC, "TCP Final: unable to reduce statistics");
-    
+
         if(MPI_Reduce(&(g_tcp_stats.throughput),
                       &(stats.throughput),
                       3,
@@ -120,10 +120,10 @@ tcp_finalize()
                       g_tw_masternode,
                       MPI_COMM_WORLD) != MPI_SUCCESS)
             tw_error(TW_LOC, "TCP Final: unable to reduce statistics");
-            
+
             if(!tw_ismaster())
                 return;
-    
+
     printf("\nTCP Model Statistics: \n\n");
     printf("\t%-50s %11ld\n", "Sent Packets", stats.sent_packets);
     printf("\t%-50s %11ld\n", "Recv Packets", stats.received_packets);
@@ -134,9 +134,9 @@ tcp_finalize()
     printf("\t%-50s %11ld\n", "Drop Packets", stats.dropped_packets);
     printf("\t%-50s %11.4lf Kbps\n", "Total Throughput", stats.throughput);
 }
-//~                                                                                                                                                                       
-//~                                                                                                                                                                       
-//~               
+//~
+//~
+//~
 //  printf("Sent Packets.......................................%d\n",
 //	 Stat->sent_packets);
 //  printf("Received Packets...................................%d\n",

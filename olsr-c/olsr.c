@@ -29,7 +29,7 @@ void olsr_change_region_rc(olsr_region_state * s, tw_bf * bf, olsr_message * m, 
 
 void olsr_region_finish(olsr_region_state * s, tw_lp * lp);
 
-tw_lptype mylps[] = 
+tw_lptype mylps[] =
   {
     {	(init_f) olsr_region_init,
         (pre_run_f) NULL,
@@ -41,15 +41,15 @@ tw_lptype mylps[] =
     {0},
   };
 
-tw_peid olsr_map(tw_lpid gid) 
+tw_peid olsr_map(tw_lpid gid)
 {
   //return (tw_peid) gid / g_tw_nlp;
   long lp_x = gid % NUM_REGIONS_X;
   long lp_y = gid / NUM_REGIONS_X;
   long vp_num_x = lp_x/g_regions_per_vp_x;
   long vp_num_y = lp_y/g_regions_per_vp_y;
-  long vp_num = vp_num_x + (vp_num_y*NUM_VP_X);  
-  tw_peid peid = vp_num/g_vp_per_proc;  
+  long vp_num = vp_num_x + (vp_num_y*NUM_VP_X);
+  tw_peid peid = vp_num/g_vp_per_proc;
   return peid;
 }
 
@@ -62,15 +62,15 @@ tw_lp *olsr_map_to_lp( tw_lpid lpid )
   tw_lpid vp_index = vp_index_x + (vp_index_y * (g_regions_per_vp_x));
   tw_lpid vp_num_x = lp_x/g_regions_per_vp_x;
   tw_lpid vp_num_y = lp_y/g_regions_per_vp_y;
-  tw_lpid vp_num = vp_num_x + (vp_num_y*NUM_VP_X);  
+  tw_lpid vp_num = vp_num_x + (vp_num_y*NUM_VP_X);
   vp_num = vp_num % g_vp_per_proc;
   tw_lpid index = vp_index + vp_num*g_regions_per_vp;
 
-#ifdef ROSS_runtime_check  
+#ifdef ROSS_runtime_check
   if( index >= g_tw_nlp )
     tw_error(TW_LOC, "index (%llu) beyond g_tw_nlp (%llu) range \n", index, g_tw_nlp);
 #endif /* ROSS_runtime_check */
-  
+
   return g_tw_lp[index];
 
 }
@@ -84,13 +84,13 @@ tw_lpid olsr_map_to_local_index( tw_lpid lpid )
   tw_lpid vp_index = vp_index_x + (vp_index_y * (g_regions_per_vp_x));
   tw_lpid vp_num_x = lp_x/g_regions_per_vp_x;
   tw_lpid vp_num_y = lp_y/g_regions_per_vp_y;
-  tw_lpid vp_num = vp_num_x + (vp_num_y*NUM_VP_X);  
+  tw_lpid vp_num = vp_num_x + (vp_num_y*NUM_VP_X);
   vp_num = vp_num % g_vp_per_proc;
   tw_lpid index = vp_index + vp_num*g_regions_per_vp;
-  
+
   if( index >= g_tw_nlp )
     tw_error(TW_LOC, "index (%llu) beyond g_tw_nlp (%llu) range \n", index, g_tw_nlp);
-  
+
   return( index );
 }
 
@@ -101,7 +101,7 @@ void olsr_grid_mapping()
   tw_lpid         lpid, kpid;
   tw_lpid         num_regions_per_kp, vp_per_proc;
   tw_lpid         local_lp_count;
-  
+
   num_regions_per_kp = (NUM_REGIONS_X * NUM_REGIONS_Y) / (NUM_VP_X * NUM_VP_Y);
   vp_per_proc = (NUM_VP_X * NUM_VP_Y) / ((tw_nnodes() * g_tw_npe)) ;
   g_tw_nlp = nlp_per_pe;
@@ -115,14 +115,14 @@ void olsr_grid_mapping()
 	  lpid = (x + (y * NUM_REGIONS_X));
 	  if( g_tw_mynode == olsr_map(lpid) )
 	    {
-	      
+
 	      kpid = local_lp_count/num_regions_per_kp;
 	      local_lp_count++; // MUST COME AFTER!! DO NOT PRE-INCREMENT ELSE KPID is WRONG!!
-	      
+
 	      if( kpid >= g_tw_nkp )
 		tw_error(TW_LOC, "Attempting to mapping a KPid (%llu) for Global LPid %llu that is beyond g_tw_nkp (%llu)\n",
 			 kpid, lpid, g_tw_nkp );
-	      
+
 	      tw_lp_onpe(olsr_map_to_local_index(lpid), g_tw_pe[0], lpid);
 	      if( g_tw_kp[kpid] == NULL )
 		tw_kp_onpe(kpid, g_tw_pe[0]);
@@ -133,7 +133,7 @@ void olsr_grid_mapping()
     }
 }
 
-void olsr_region_init(olsr_region_state * s, tw_lp * lp) 
+void olsr_region_init(olsr_region_state * s, tw_lp * lp)
 {
   int i, j;
   double distance = 0.0;
@@ -148,7 +148,7 @@ void olsr_region_init(olsr_region_state * s, tw_lp * lp)
   tw_lpid destlp;
 
   // Init the MPRs
-  for( i=0; i < OLSR_MAX_MPRS_PER_REGION; i++) 
+  for( i=0; i < OLSR_MAX_MPRS_PER_REGION; i++)
     {
       s->mpr[i].failed_packets = 0;
       s->mpr[i].sent_packets = 0;
@@ -158,25 +158,25 @@ void olsr_region_init(olsr_region_state * s, tw_lp * lp)
       rf.noiseFigure = 1;
       rf.noiseInterference = 1;
       s->mpr[i].snr = calculateSnr(rf);
-      s->mpr[i].success_rate = 
+      s->mpr[i].success_rate =
 	OLSR_80211b_DsssDqpskCck11_SuccessRate(s->mpr[i].snr, (DATA_PACKET_SIZE * 8));
       s->mpr[i].tx_power = OLSR_MPR_POWER;
 
       switch( i )
 	{
-	case OLSR_NORTH: 
+	case OLSR_NORTH:
 	  s->mpr[i].location.x = REGION_SIZE/2.0;
 	  s->mpr[i].location.y = REGION_SIZE * 0.9;
 	  break;
-	case OLSR_SOUTH: 
+	case OLSR_SOUTH:
 	  s->mpr[i].location.x = REGION_SIZE/2.0;
 	  s->mpr[i].location.y = REGION_SIZE * 0.1;
 	  break;
-	case OLSR_EAST: 
+	case OLSR_EAST:
 	  s->mpr[i].location.x = REGION_SIZE * 0.9;
 	  s->mpr[i].location.y = REGION_SIZE/2.0;
 	  break;
-	case OLSR_WEST: 
+	case OLSR_WEST:
 	  s->mpr[i].location.x = REGION_SIZE * 0.1;
 	  s->mpr[i].location.y = REGION_SIZE/2.0;
 	  break;
@@ -184,11 +184,11 @@ void olsr_region_init(olsr_region_state * s, tw_lp * lp)
 	  tw_error(TW_LOC, "Bad OLSR Direction %d", i );
 	}
       // a mpr does not have an owning mpr so just init to max
-      s->mpr[i].my_mpr = OLSR_MAX_MPRS_PER_REGION; 
+      s->mpr[i].my_mpr = OLSR_MAX_MPRS_PER_REGION;
     }
 
   // Init the station -- only init 1/2 of max
-  for( i=0; i < OLSR_MAX_STATIONS_PER_REGION/2; i++) 
+  for( i=0; i < OLSR_MAX_STATIONS_PER_REGION/2; i++)
     {
       s->station[i].failed_packets = 0;
       s->station[i].sent_packets = 0;
@@ -196,7 +196,7 @@ void olsr_region_init(olsr_region_state * s, tw_lp * lp)
       s->station[i].tx_power = OLSR_MPR_POWER;
       s->station[i].location.x = tw_rand_unif( lp->rng ) * REGION_SIZE;
       s->station[i].location.y = tw_rand_unif( lp->rng ) * REGION_SIZE;
-      
+
       // find closest MPR to each station
       for( j = 0; j < OLSR_MAX_MPRS_PER_REGION; j++ )
 	{
@@ -215,7 +215,7 @@ void olsr_region_init(olsr_region_state * s, tw_lp * lp)
       rf.noiseFigure = 1;
       rf.noiseInterference = 1;
       s->station[i].snr = calculateSnr(rf);
-      s->station[i].success_rate = 
+      s->station[i].success_rate =
 	OLSR_80211b_DsssDqpskCck11_SuccessRate(s->station[i].snr, (DATA_PACKET_SIZE * 8));
 
       /* printf("LP %lld: REGION INIT: Success Event at TS %f, station %d, x(%lf) y(%lf), dist(%lf) snr(%lf), new mpr %d, success rate %lf\n",  */
@@ -248,7 +248,7 @@ void olsr_region_init(olsr_region_state * s, tw_lp * lp)
 	  next_x = s->region_location.x;
           next_y = (s->region_location.y + 1) % NUM_REGIONS_Y;
 	  break;
-	  
+
 	case OLSR_SOUTH:
 	  next_x = s->region_location.x;
           next_y = (s->region_location.y + NUM_REGIONS_Y - 1) % NUM_REGIONS_Y;
@@ -290,7 +290,7 @@ void olsr_region_init(olsr_region_state * s, tw_lp * lp)
   s->region_location.y = lp->gid % NUM_REGIONS_X;
 }
 
-double olsr_hello_time(olsr_region_state * s) 
+double olsr_hello_time(olsr_region_state * s)
 {
 
   /* The optimal number of MPRs is NP-complete and related
@@ -304,12 +304,12 @@ double olsr_hello_time(olsr_region_state * s)
      MPR and from there the packet is route along MPRs because
      they remain fixed.
 
-  */ 
+  */
   double time = (s->num_mprs + s->num_stations) * HELLO_PACKET_TIME;
   return time;
-} 
+}
 
-void olsr_station_to_mpr(olsr_region_state * s, tw_bf * bf, olsr_message * m, tw_lp * lp) 
+void olsr_station_to_mpr(olsr_region_state * s, tw_bf * bf, olsr_message * m, tw_lp * lp)
 {
   tw_event *e=NULL;
   olsr_message *m_new=NULL;
@@ -339,7 +339,7 @@ void olsr_station_to_mpr(olsr_region_state * s, tw_bf * bf, olsr_message * m, tw
 
       backoff_time = cw * WIFI_SLOT_TIME + tw_rand_unif(lp->rng);
 
-      // printf("LP %d: Scheduling message backoff at TS %lf for %lf useconds \n", 
+      // printf("LP %d: Scheduling message backoff at TS %lf for %lf useconds \n",
       //    lp->gid, tw_now(lp), backoff_time );
 
       e = tw_event_new(lp->gid, backoff_time, lp);
@@ -353,10 +353,10 @@ void olsr_station_to_mpr(olsr_region_state * s, tw_bf * bf, olsr_message * m, tw
       tw_event_send(e);
       return;
     }
-  
+
   s->slot_busy = 1;
 
-  if( tw_rand_unif( lp->rng ) > s->station[m->station].success_rate ) 
+  if( tw_rand_unif( lp->rng ) > s->station[m->station].success_rate )
     {
       bf->c1 = 1;
       s->station[m->station].failed_packets++;
@@ -388,7 +388,7 @@ void olsr_station_to_mpr(olsr_region_state * s, tw_bf * bf, olsr_message * m, tw
   tw_event_send(e);
 }
 
-void olsr_station_to_mpr_rc(olsr_region_state * s, tw_bf * bf, olsr_message * m, tw_lp * lp) 
+void olsr_station_to_mpr_rc(olsr_region_state * s, tw_bf * bf, olsr_message * m, tw_lp * lp)
 {
   if( s->station[m->station].next_move_time <= tw_now(lp) )
     {
@@ -407,13 +407,13 @@ void olsr_station_to_mpr_rc(olsr_region_state * s, tw_bf * bf, olsr_message * m,
 
   s->station[m->station].sent_packets--;
 
-  if( bf->c1 ) 
+  if( bf->c1 )
     {
       s->station[m->station].failed_packets--;
     }
 }
 
-void olsr_arrival_to_mpr(olsr_region_state * s, tw_bf * bf, olsr_message * m, tw_lp * lp) 
+void olsr_arrival_to_mpr(olsr_region_state * s, tw_bf * bf, olsr_message * m, tw_lp * lp)
 {
   tw_event *e = NULL;
   olsr_message *new_m=NULL;
@@ -423,7 +423,7 @@ void olsr_arrival_to_mpr(olsr_region_state * s, tw_bf * bf, olsr_message * m, tw
   s->slot_busy = 0;
   // increment waiting packets
   s->mpr[m->mpr].waiting_packets++;
-  
+
   // check if packet is delivered to region
   if( m->hop_count == m->max_hop_count)
     {
@@ -445,7 +445,7 @@ void olsr_arrival_to_mpr(olsr_region_state * s, tw_bf * bf, olsr_message * m, tw
   new_m->contention_window = m->contention_window;
 }
 
-void olsr_arrival_to_mpr_rc(olsr_region_state * s, tw_bf * bf, olsr_message * m, tw_lp * lp) 
+void olsr_arrival_to_mpr_rc(olsr_region_state * s, tw_bf * bf, olsr_message * m, tw_lp * lp)
 {
   s->mpr[m->mpr].waiting_packets--;
   if( m->hop_count == m->max_hop_count)
@@ -456,7 +456,7 @@ void olsr_arrival_to_mpr_rc(olsr_region_state * s, tw_bf * bf, olsr_message * m,
   tw_rand_reverse_unif(lp->rng);
 }
 
-void olsr_departure_from_mpr(olsr_region_state * s, tw_bf * bf, olsr_message * m, tw_lp * lp) 
+void olsr_departure_from_mpr(olsr_region_state * s, tw_bf * bf, olsr_message * m, tw_lp * lp)
 {
   tw_event *e=NULL;
   olsr_message *m_new=NULL;
@@ -565,7 +565,7 @@ void olsr_departure_from_mpr(olsr_region_state * s, tw_bf * bf, olsr_message * m
     }
 
   // Check to see if message to self LP or remote LP
-  if( next_x == s->region_location.x && 
+  if( next_x == s->region_location.x &&
       next_y == s->region_location.y)
     {
       // schedule MPR Arrvial to Self
@@ -604,7 +604,7 @@ void olsr_departure_from_mpr(olsr_region_state * s, tw_bf * bf, olsr_message * m
   tw_event_send(e);
 }
 
-void olsr_departure_from_mpr_rc(olsr_region_state * s, tw_bf * bf, olsr_message * m, tw_lp * lp) 
+void olsr_departure_from_mpr_rc(olsr_region_state * s, tw_bf * bf, olsr_message * m, tw_lp * lp)
 {
   tw_rand_reverse_unif(lp->rng);
   tw_rand_reverse_unif(lp->rng);
@@ -618,27 +618,27 @@ void olsr_departure_from_mpr_rc(olsr_region_state * s, tw_bf * bf, olsr_message 
   tw_rand_reverse_unif(lp->rng);
 }
 
-void olsr_move(olsr_region_state * s, tw_bf * bf, olsr_message * m, tw_lp * lp) 
+void olsr_move(olsr_region_state * s, tw_bf * bf, olsr_message * m, tw_lp * lp)
 {
 
 }
 
-void olsr_move_rc(olsr_region_state * s, tw_bf * bf, olsr_message * m, tw_lp * lp) 
+void olsr_move_rc(olsr_region_state * s, tw_bf * bf, olsr_message * m, tw_lp * lp)
 {
 
 }
 
-void olsr_change_mpr(olsr_region_state * s, tw_bf * bf, olsr_message * m, tw_lp * lp) 
+void olsr_change_mpr(olsr_region_state * s, tw_bf * bf, olsr_message * m, tw_lp * lp)
 {
 
 }
 
-void olsr_change_mpr_rc(olsr_region_state * s, tw_bf * bf, olsr_message * m, tw_lp * lp) 
+void olsr_change_mpr_rc(olsr_region_state * s, tw_bf * bf, olsr_message * m, tw_lp * lp)
 {
 
 }
 
-void olsr_change_region(olsr_region_state * s, tw_bf * bf, olsr_message * m, tw_lp * lp) 
+void olsr_change_region(olsr_region_state * s, tw_bf * bf, olsr_message * m, tw_lp * lp)
 {
   int i,j;
     double distance = 0.0;
@@ -667,13 +667,13 @@ void olsr_change_region(olsr_region_state * s, tw_bf * bf, olsr_message * m, tw_
       /* 	     lp->gid, s->station_drops, tw_now(lp)); */
       return;
     }
-  
+
   s->num_stations++;
 
   s->station[i].tx_power = OLSR_MPR_POWER;
   s->station[i].location.x = tw_rand_unif( lp->rng ) * REGION_SIZE;
   s->station[i].location.y = tw_rand_unif( lp->rng ) * REGION_SIZE;
-  
+
   // find closest MPR to each station
   for( j = 0; j < OLSR_MAX_MPRS_PER_REGION; j++ )
     {
@@ -684,7 +684,7 @@ void olsr_change_region(olsr_region_state * s, tw_bf * bf, olsr_message * m, tw_
 	  my_mpr = j;
 	}
     }
-  
+
   s->station[i].my_mpr = my_mpr;
 
   rf.signal = calcRxPower(s->station[i].tx_power, min_distance, LAMBDA);
@@ -695,7 +695,7 @@ void olsr_change_region(olsr_region_state * s, tw_bf * bf, olsr_message * m, tw_
 
   // copy the success rate since that's the primary state we really need
   m->success_rate =  s->station[i].success_rate;
-  s->station[i].success_rate = 
+  s->station[i].success_rate =
     OLSR_80211b_DsssDqpskCck11_SuccessRate(s->station[i].snr, (DATA_PACKET_SIZE * 8));
 
   /* printf("LP %lld: CHANGE REGION: Success Event at TS %f, station %d, x(%lf) y(%lf), dist(%lf) snr(%lf), new mpr %d, success rate %lf\n",  */
@@ -728,26 +728,26 @@ void olsr_change_region(olsr_region_state * s, tw_bf * bf, olsr_message * m, tw_
       next_x = s->region_location.x;
       next_y = (s->region_location.y + 1) % NUM_REGIONS_Y;
       break;
-      
+
     case OLSR_SOUTH:
       next_x = s->region_location.x;
       next_y = (s->region_location.y + NUM_REGIONS_Y - 1) % NUM_REGIONS_Y;
       break;
-      
+
     case OLSR_EAST:
       next_x = (s->region_location.x + 1) % NUM_REGIONS_X;
       next_y = s->region_location.y;
       break;
-      
+
     case OLSR_WEST:
       next_x = (s->region_location.x + NUM_REGIONS_X - 1) % NUM_REGIONS_X;
       next_y = s->region_location.y;
       break;
-      
+
     default:
       tw_error(TW_LOC, "Bad Direction %d \n", direction );
     }
-  
+
   destlp = next_x * NUM_REGIONS_X + next_y;
   move_time = tw_rand_exponential(lp->rng, MEAN_TIME_BETWEEN_MOVES);
   e = tw_event_new(destlp, move_time , lp);
@@ -757,14 +757,14 @@ void olsr_change_region(olsr_region_state * s, tw_bf * bf, olsr_message * m, tw_
   new_m->station = i;
   new_m->contention_window = 0;
   tw_event_send(e);
- 
+
   // swap next move time to message
   m->next_move_time =  s->station[i].next_move_time;
   s->station[i].next_move_time = tw_now(lp) + move_time;
   s->station_status[i] = STATION_SLOT_BUSY;
 }
 
-void olsr_change_region_rc(olsr_region_state * s, tw_bf * bf, olsr_message * m, tw_lp * lp) 
+void olsr_change_region_rc(olsr_region_state * s, tw_bf * bf, olsr_message * m, tw_lp * lp)
 {
   int i;
     for( i = 0; i < OLSR_MAX_STATIONS_PER_REGION; i++ )
@@ -789,66 +789,66 @@ void olsr_change_region_rc(olsr_region_state * s, tw_bf * bf, olsr_message * m, 
 
   s->num_stations--;
 
-  // re-swap msg and stat 
+  // re-swap msg and stat
   s->station[i].success_rate = m->success_rate;
   s->station_status[i] = STATION_SLOT_FREE;
   s->station[i].next_move_time = m->next_move_time;
 }
 
-void olsr_region_event_handler(olsr_region_state * s, tw_bf * bf, olsr_message * m, tw_lp * lp) 
+void olsr_region_event_handler(olsr_region_state * s, tw_bf * bf, olsr_message * m, tw_lp * lp)
 {
-  switch( m->type ) 
+  switch( m->type )
     {
     case OLSR_STATION_TO_MPR:
-      olsr_station_to_mpr(s, bf, m, lp); 
+      olsr_station_to_mpr(s, bf, m, lp);
       break;
-       
+
     case OLSR_ARRIVAL_TO_MPR:
-      olsr_arrival_to_mpr(s, bf, m, lp); 
+      olsr_arrival_to_mpr(s, bf, m, lp);
       break;
-      
+
     case OLSR_DEPARTURE_FROM_MPR:
       olsr_departure_from_mpr(s, bf, m, lp);
       break;
-      
+
     case OLSR_CHANGE_MPR:
       olsr_change_mpr(s, bf, m, lp);
       break;
-      
+
     case OLSR_CHANGE_REGION:
       olsr_change_region(s, bf, m, lp);
-      break; 
-      
+      break;
+
     default:
       tw_error(TW_LOC, "Undefined type, corrupted message \n");
       break;
     }
 }
 
-void olsr_region_event_handler_rc(olsr_region_state * s, tw_bf * bf, olsr_message * m, tw_lp * lp) 
+void olsr_region_event_handler_rc(olsr_region_state * s, tw_bf * bf, olsr_message * m, tw_lp * lp)
 {
-  switch( m->type ) 
+  switch( m->type )
     {
     case OLSR_STATION_TO_MPR:
-      olsr_station_to_mpr_rc(s, bf, m, lp); 
+      olsr_station_to_mpr_rc(s, bf, m, lp);
       break;
 
     case OLSR_ARRIVAL_TO_MPR:
-      olsr_arrival_to_mpr_rc(s, bf, m, lp); 
+      olsr_arrival_to_mpr_rc(s, bf, m, lp);
       break;
-      
+
     case OLSR_DEPARTURE_FROM_MPR:
       olsr_departure_from_mpr_rc(s, bf, m, lp);
       break;
-      
+
     case OLSR_CHANGE_MPR:
       olsr_change_mpr_rc(s, bf, m, lp);
       break;
-      
+
     case OLSR_CHANGE_REGION:
       olsr_change_region_rc(s, bf, m, lp);
-      break; 
-      
+      break;
+
     default:
       tw_error(TW_LOC, "Undefined type, corrupted message \n");
       break;
@@ -861,18 +861,18 @@ void olsr_region_finish(olsr_region_state * s, tw_lp * lp)
   unsigned long long station_failed_packets=0;
   unsigned long long station_sent_packets=0;
   unsigned long long station_packets_delivered=0;
-  
+
   for( i=0; i < OLSR_MAX_STATIONS_PER_REGION; i++)
     {
       station_failed_packets += s->station[i].failed_packets;
       station_sent_packets += s->station[i].sent_packets;
     }
-  for( j=0; j < OLSR_MAX_MPRS_PER_REGION; j++) 
+  for( j=0; j < OLSR_MAX_MPRS_PER_REGION; j++)
     {
       station_packets_delivered += s->mpr[j].packets_delivered;
     }
 
-  printf("LP %lld, Sent Packets: %lld, Failed Packets: %lld, MPR Delivered Packets: %lld \n", 
+  printf("LP %lld, Sent Packets: %lld, Failed Packets: %lld, MPR Delivered Packets: %lld \n",
 	 lp->gid, station_sent_packets, station_failed_packets, station_packets_delivered);
 }
 
@@ -889,17 +889,17 @@ int
 main(int argc, char **argv, char **env)
 {
   tw_lpid         num_regions_per_kp, vp_per_proc;
-  
+
   lookahead = 1.0;
   tw_opt_add(app_opt);
   tw_init(&argc, &argv);
 
-  nlp_per_pe = (NUM_REGIONS_X * NUM_REGIONS_Y) / (tw_nnodes() * g_tw_npe);  
+  nlp_per_pe = (NUM_REGIONS_X * NUM_REGIONS_Y) / (tw_nnodes() * g_tw_npe);
   g_tw_memory_nqueues = 16;
-  
+
   offset_lpid = g_tw_mynode * nlp_per_pe;
   ttl_lps = tw_nnodes() * g_tw_npe * nlp_per_pe;
-  
+
   g_tw_events_per_pe = (mult * nlp_per_pe * OLSR_MAX_STATIONS_PER_REGION) + optimistic_memory;
   g_tw_lookahead = lookahead;
 
@@ -912,9 +912,9 @@ main(int argc, char **argv, char **env)
   g_tw_mapping = CUSTOM;
   g_tw_custom_initial_mapping = &olsr_grid_mapping;
   g_tw_custom_lp_global_to_local_map = &olsr_map_to_lp;
-  
+
   tw_define_lps(nlp_per_pe, sizeof(olsr_message));
-  
+
   tw_run();
 
   //TODO:  Add MPI_Reduces Here to collect
@@ -923,7 +923,7 @@ main(int argc, char **argv, char **env)
   // Effective Bandwidth
   // Average failed packets
   // Time spent in Hello
-  // 
+  //
 
   tw_end();
 

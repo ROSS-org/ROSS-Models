@@ -76,7 +76,7 @@ const tw_optdef app_opts[] =
 int main( int argc, char** argv )
 {
     int i,j;
-    
+
     // Initialize ROSS environment
     tw_opt_add( app_opts );
     tw_init( &argc, &argv );
@@ -102,7 +102,7 @@ int main( int argc, char** argv )
             tw_lp_settype( i * LPS_PER_FS + FS_PER_IO + 1 + j, &mylps[2] );
         for( j = 0; j < CONT_PER_FS * DISK_PER_RC; ++j )
             tw_lp_settype( i * LPS_PER_FS + FS_PER_IO + 1 + CONT_PER_FS + j, &mylps[3] );
-    }    
+    }
 
     // Initialize stats
     g_stats.ttl_disk_failures = 0;
